@@ -20,13 +20,14 @@ import sun.security.util.KnownOIDs;
  */
 public class Server
 {
+
 	public ServerSocket serverSocket;
 	public int port;
 	public int clientNumber = 0;
-	public ArrayList<ServerClient>	clientList = new ArrayList<>();
-	public HashMap<String, ArrayList<ServerClient>> rooms = new HashMap<String, ArrayList<ServerClient>>();
+	public ArrayList<ServerClient> clientList = new ArrayList<>();
+	public ArrayList<Project> projectList = new ArrayList<>();
 	public ServerListener listener;
-	
+
 	public Server(int portNumber)
 	{
 		try {
@@ -38,21 +39,57 @@ public class Server
 			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+
+	public void publicMessageSender(Request message)
+	{
+		for (ServerClient serverClient : clientList) {
+			try {
+				serverClient.sOutput.writeObject(message);
+			} catch (IOException ex) {
+				Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	public void personalMessageSender(ServerClient client, Request message)
+	{
+		
+	}
+	
+	public void sendToClient(ServerClient client, Request request)
+	{
+		try {
+			client.sOutput.writeObject(request);
+		} catch (IOException ex) {
+			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	public Project getProject(String name)
+	{
+		for (Project project : projectList) {
+			if (name.equalsIgnoreCase(project.projectName)) {
+				return project;
+			}
+		}
+		return null;
+	}
 }
 
 class ServerListener extends Thread
 {
+
 	Server AppServer;
-	
+
 	public ServerListener(Server myServer)
 	{
 		AppServer = myServer;
 	}
-	
+
 	@Override
 	public void run()
 	{
-		while (!AppServer.serverSocket.isClosed()) {			
+		while (!AppServer.serverSocket.isClosed()) {
 			try {
 				Socket clientSocket = AppServer.serverSocket.accept();
 				ServerClient newClient = new ServerClient(clientSocket, AppServer.clientNumber, AppServer);
