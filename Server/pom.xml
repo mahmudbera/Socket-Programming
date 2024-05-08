@@ -22,7 +22,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass></mainClass>//main dosyanın yolunu ver. şuanki = com.mycompany.socket_programming...
+                            <mainClass>Server.mainServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

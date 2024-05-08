@@ -4,19 +4,49 @@
  */
 package Client;
 
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author mbera
  */
 public class HomePage extends javax.swing.JFrame
 {
-
-	/**
-	 * Creates new form HomePage
-	 */
-	public HomePage()
+	
+	public static GroupChat groupChat = new GroupChat();
+	
+	public static HomePage HomePage;
+	DefaultListModel DLMUsers;
+	
+	DefaultListModel DLMProjects;
+	ArrayList<GroupChat> ALProjects;
+	
+	DefaultListModel DLMProjectUsers;
+	ArrayList<String> ALProjectUsers;
+	
+	DefaultListModel DLMMyProjects;
+	
+	String userName;
+	
+	public HomePage(String name)
 	{
 		initComponents();
+		DLMUsers = new DefaultListModel();
+		
+		
+		DLMProjects = new DefaultListModel();
+		ALProjects = new ArrayList<>();
+		
+		DLMProjectUsers = new DefaultListModel();
+		ALProjectUsers = new ArrayList<>();
+		
+		DLMMyProjects = new DefaultListModel();
+		
+		HomePage = this;
+		this.userName = name;
+		UserList.setModel(DLMUsers);
 	}
 
 	/**
@@ -39,6 +69,7 @@ public class HomePage extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         ProjectMembersList = new javax.swing.JList<>();
+        RefreshListButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         UserProjectList = new javax.swing.JList<>();
@@ -52,11 +83,19 @@ public class HomePage extends javax.swing.JFrame
         jScrollPane1 = new javax.swing.JScrollPane();
         UserList = new javax.swing.JList<>();
         ChatwithUserButton = new javax.swing.JButton();
+        RefreshUserListButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        AvailableProjectsList.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                AvailableProjectsListMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(AvailableProjectsList);
 
         EnterAvaliableProjectButton.setText("Enter Selected Project");
@@ -74,6 +113,15 @@ public class HomePage extends javax.swing.JFrame
         ProjectMembersList.setEnabled(false);
         jScrollPane3.setViewportView(ProjectMembersList);
 
+        RefreshListButton.setText("Refresh List");
+        RefreshListButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                RefreshListButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -81,6 +129,7 @@ public class HomePage extends javax.swing.JFrame
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(RefreshListButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
@@ -103,7 +152,9 @@ public class HomePage extends javax.swing.JFrame
                     .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(EnterAvaliableProjectButton)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(RefreshListButton)
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Available Projects", jPanel6);
@@ -130,7 +181,7 @@ public class HomePage extends javax.swing.JFrame
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(EnteringProjectChatButton)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("My Projects", jPanel4);
@@ -138,6 +189,13 @@ public class HomePage extends javax.swing.JFrame
         jLabel3.setText("Project Name");
 
         CreateProjectButton.setText("Create");
+        CreateProjectButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                CreateProjectButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -162,7 +220,7 @@ public class HomePage extends javax.swing.JFrame
                     .addComponent(ProjectNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(CreateProjectButton)
-                .addContainerGap(200, Short.MAX_VALUE))
+                .addContainerGap(218, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Create Project", jPanel5);
@@ -189,6 +247,15 @@ public class HomePage extends javax.swing.JFrame
 
         ChatwithUserButton.setText("Chat with Selected");
 
+        RefreshUserListButton.setText("Refresh List");
+        RefreshUserListButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                RefreshUserListButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -196,17 +263,19 @@ public class HomePage extends javax.swing.JFrame
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(45, 45, 45)
                                 .addComponent(jLabel1))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(ChatwithUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ChatwithUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(RefreshUserListButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -215,10 +284,12 @@ public class HomePage extends javax.swing.JFrame
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ChatwithUserButton)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(RefreshUserListButton)
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 140, -1));
@@ -241,11 +312,69 @@ public class HomePage extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+	
+	
+	public void getUsers(ArrayList<String> usersArrayList)
+	{
+		DLMUsers.removeAllElements();
+		UserList.removeAll();
+		for (String string : usersArrayList) {
+			DLMUsers.addElement(string);
+		}
+		UserList.setModel(DLMUsers);
+	}
+	
+	public void RefreshProjects()
+	{
+		AvailableProjectsList.setModel(DLMProjects);
+	}
     private void EnterAvaliableProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterAvaliableProjectButtonActionPerformed
     {//GEN-HEADEREND:event_EnterAvaliableProjectButtonActionPerformed
-        // TODO add your handling code here:
+        Request request = new Request(Request.requestType.ClientConnected);
+		request.request = (String) AvailableProjectsList.getSelectedValue();
+		Client.sendToServer(request);
     }//GEN-LAST:event_EnterAvaliableProjectButtonActionPerformed
+
+    private void AvailableProjectsListMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_AvailableProjectsListMouseClicked
+    {//GEN-HEADEREND:event_AvailableProjectsListMouseClicked
+        AvailableProjectsList.removeAll();
+		DLMProjectUsers.removeAllElements();
+		Request request = new Request(Request.requestType.GetProjectMembers);
+		request.request = AvailableProjectsList.getSelectedValue();
+		Client.sendToServer(request);
+    }//GEN-LAST:event_AvailableProjectsListMouseClicked
+
+    private void CreateProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_CreateProjectButtonActionPerformed
+    {//GEN-HEADEREND:event_CreateProjectButtonActionPerformed
+			/*GroupChat chat = new GroupChat(userName, ProjectNameTextField.getText());
+			chat.ALUsers.add(userName);
+			this.ALProjects.add(chat);
+			chat.setVisible(true);*/
+			
+			Request request = new Request(Request.requestType.CreateProject);
+			request.request = ProjectNameTextField.getText();
+			Client.sendToServer(request);
+    }//GEN-LAST:event_CreateProjectButtonActionPerformed
+
+    private void RefreshListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshListButtonActionPerformed
+    {//GEN-HEADEREND:event_RefreshListButtonActionPerformed
+		Request request = new Request(Request.requestType.GetProjects);
+		Client.sendToServer(request);
+		AvailableProjectsList.setModel(DLMProjects);
+		
+		JOptionPane.showMessageDialog(null, Integer.toString(DLMProjects.getSize()), "A", JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_RefreshListButtonActionPerformed
+
+    private void RefreshUserListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshUserListButtonActionPerformed
+    {//GEN-HEADEREND:event_RefreshUserListButtonActionPerformed
+        Request request = new Request(Request.requestType.GetAllUsers);
+		Client.sendToServer(request);
+		UserList.setModel(DLMUsers);
+		
+		JOptionPane.showMessageDialog(null, Integer.toString(DLMUsers.getSize()), "A", JOptionPane.WARNING_MESSAGE);
+		
+
+    }//GEN-LAST:event_RefreshUserListButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -280,9 +409,7 @@ public class HomePage extends javax.swing.JFrame
 		{
 			public void run()
 			{
-				HomePage thisFrame = new HomePage();
-				thisFrame.setVisible(true);
-				thisFrame.setLocationRelativeTo(null);
+				
 			}
 		});
 	}
@@ -295,6 +422,8 @@ public class HomePage extends javax.swing.JFrame
     private javax.swing.JButton EnteringProjectChatButton;
     private javax.swing.JList<String> ProjectMembersList;
     private javax.swing.JTextField ProjectNameTextField;
+    private javax.swing.JButton RefreshListButton;
+    private javax.swing.JButton RefreshUserListButton;
     private javax.swing.JList<String> UserList;
     private javax.swing.JList<String> UserProjectList;
     private javax.swing.JLabel jLabel1;

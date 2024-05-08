@@ -4,16 +4,15 @@
  */
 package Client;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author mbera
  */
 public class LoginPage extends javax.swing.JFrame
 {
-
-	/**
-	 * Creates new form LoginPage
-	 */
+	public static HomePage nextFrame;
 	public LoginPage()
 	{
 		initComponents();
@@ -29,20 +28,13 @@ public class LoginPage extends javax.swing.JFrame
     private void initComponents()
     {
 
-        jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
-        LoginNameLabel = new javax.swing.JLabel();
-        LoginPasswordLabel = new javax.swing.JLabel();
-        LoginPasswordTextField = new javax.swing.JTextField();
-        LoginNameTextField = new javax.swing.JTextField();
-        LoginButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         SigninPasswordTextField = new javax.swing.JTextField();
-        SigninNameTextField = new javax.swing.JTextField();
         SigninPasswordLabel = new javax.swing.JLabel();
         SigninNameLabel = new javax.swing.JLabel();
         SigninButton = new javax.swing.JButton();
+        SigninNameTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login Window");
@@ -51,64 +43,29 @@ public class LoginPage extends javax.swing.JFrame
         setPreferredSize(new java.awt.Dimension(300, 250));
         setResizable(false);
 
-        jPanel1.setEnabled(false);
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        LoginNameLabel.setText("Name");
-
-        LoginPasswordLabel.setText("Password");
-
-        LoginButton.setText("Login");
-        LoginButton.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                LoginButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(LoginButton))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(LoginNameLabel)
-                            .addComponent(LoginPasswordLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(LoginPasswordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
-                            .addComponent(LoginNameTextField))))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(LoginNameLabel)
-                    .addComponent(LoginNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(LoginPasswordLabel)
-                    .addComponent(LoginPasswordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(LoginButton)
-                .addGap(142, 142, 142))
-        );
-
-        jTabbedPane1.addTab("Login", jPanel2);
+        SigninPasswordTextField.setText("123");
 
         SigninPasswordLabel.setText("Password");
 
         SigninNameLabel.setText("Name");
 
         SigninButton.setText("Sign in");
+        SigninButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                SigninButtonActionPerformed(evt);
+            }
+        });
+
+        SigninNameTextField.setText("aa");
+        SigninNameTextField.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                SigninNameTextFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -153,29 +110,35 @@ public class LoginPage extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_LoginButtonActionPerformed
-    {//GEN-HEADEREND:event_LoginButtonActionPerformed
-       // TODO add your handling code here:
-    }//GEN-LAST:event_LoginButtonActionPerformed
+    private void SigninNameTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SigninNameTextFieldActionPerformed
+    {//GEN-HEADEREND:event_SigninNameTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SigninNameTextFieldActionPerformed
+
+    private void SigninButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SigninButtonActionPerformed
+    {//GEN-HEADEREND:event_SigninButtonActionPerformed
+        String userName = SigninNameTextField.getText();
+        Client.Start("13.53.205.162", 5000, userName);
+        nextFrame = new HomePage(userName);
+        this.setVisible(false);
+        nextFrame.setVisible(true);
+        nextFrame.setLocationRelativeTo(null);
+		Request request = new Request(Request.requestType.GetAllUsers);
+		Client.sendToServer(request);
+    }//GEN-LAST:event_SigninButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -218,18 +181,11 @@ public class LoginPage extends javax.swing.JFrame
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton LoginButton;
-    private javax.swing.JLabel LoginNameLabel;
-    private javax.swing.JTextField LoginNameTextField;
-    private javax.swing.JLabel LoginPasswordLabel;
-    private javax.swing.JTextField LoginPasswordTextField;
     private javax.swing.JButton SigninButton;
     private javax.swing.JLabel SigninNameLabel;
     private javax.swing.JTextField SigninNameTextField;
     private javax.swing.JLabel SigninPasswordLabel;
     private javax.swing.JTextField SigninPasswordTextField;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables

@@ -4,21 +4,27 @@
  */
 package Client;
 
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+
 /**
  *
  * @author mbera
  */
 public class GroupChat extends javax.swing.JFrame
 {
-
-	/**
-	 * Creates new form GroupChat
-	 */
+	DefaultListModel ALUsers = new DefaultListModel();;
+	String ProjectName;
+	
 	public GroupChat()
 	{
 		initComponents();
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		UsersList.setModel(ALUsers);
 	}
-
+	
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,10 +94,17 @@ public class GroupChat extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+	
+	public void Refresh()
+	{
+		Request request = new Request(Request.requestType.projectMemberstoChat);
+		request.request = ProjectName;
+		Client.sendToServer(request);
+	}
+	
     private void SendMessageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendMessageButtonActionPerformed
     {//GEN-HEADEREND:event_SendMessageButtonActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_SendMessageButtonActionPerformed
 
 	/**
