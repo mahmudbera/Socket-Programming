@@ -13,10 +13,11 @@ import java.util.ArrayList;
 public class Project
 {
 	String projectName;
-	ArrayList<ServerClient> clientList = new ArrayList<>();
+	ArrayList<String> clientList = new ArrayList<>();
 	
-	public Project(String name)
+	public Project(String name, String clientName)
 	{
 		this.projectName = name;
+		clientList.add(clientName);
 	}
 }

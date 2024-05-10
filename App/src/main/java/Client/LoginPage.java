@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class LoginPage extends javax.swing.JFrame
 {
-	public static HomePage nextFrame;
+	public HomePage nextFrame;
+	
 	public LoginPage()
 	{
 		initComponents();
@@ -58,7 +59,7 @@ public class LoginPage extends javax.swing.JFrame
             }
         });
 
-        SigninNameTextField.setText("aa");
+        SigninNameTextField.setText("aaaa");
         SigninNameTextField.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -130,14 +131,13 @@ public class LoginPage extends javax.swing.JFrame
 
     private void SigninButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SigninButtonActionPerformed
     {//GEN-HEADEREND:event_SigninButtonActionPerformed
-        String userName = SigninNameTextField.getText();
-        Client.Start("13.53.205.162", 5000, userName);
-        nextFrame = new HomePage(userName);
-        this.setVisible(false);
-        nextFrame.setVisible(true);
-        nextFrame.setLocationRelativeTo(null);
-		Request request = new Request(Request.requestType.GetAllUsers);
-		Client.sendToServer(request);
+        Client client = new Client("13.48.44.132", 5000, SigninNameTextField.getText());
+		if (client.respond == true) {
+			nextFrame = new HomePage(client);
+			nextFrame.setVisible(true);
+			this.dispose();
+		}
+		System.out.println(client.respond);
     }//GEN-LAST:event_SigninButtonActionPerformed
 
 	/**

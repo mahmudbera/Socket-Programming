@@ -4,6 +4,8 @@
  */
 package Server;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author mbera
@@ -14,6 +16,7 @@ public class mainServer extends javax.swing.JFrame
 	/**
 	 * Creates new form mainServer
 	 */
+	Server server;
 	public mainServer()
 	{
 		initComponents();
@@ -30,6 +33,7 @@ public class mainServer extends javax.swing.JFrame
     {
 
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -42,13 +46,24 @@ public class mainServer extends javax.swing.JFrame
             }
         });
 
+        jButton2.setText("jButton2");
+        jButton2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(148, 148, 148)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1))
                 .addContainerGap(177, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -56,7 +71,9 @@ public class mainServer extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGap(117, 117, 117)
                 .addComponent(jButton1)
-                .addContainerGap(160, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
+                .addComponent(jButton2)
+                .addContainerGap(110, Short.MAX_VALUE))
         );
 
         pack();
@@ -64,8 +81,16 @@ public class mainServer extends javax.swing.JFrame
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
     {//GEN-HEADEREND:event_jButton1ActionPerformed
-        Server.Start(5000);
+        this.server = new Server();
+		server.Start(5000);
+		JOptionPane.showMessageDialog(null, "başladı", "başladı", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
+    {//GEN-HEADEREND:event_jButton2ActionPerformed
+        String text = this.server.getText();
+		JOptionPane.showMessageDialog(null, text, "A", JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -107,5 +132,6 @@ public class mainServer extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     // End of variables declaration//GEN-END:variables
 }

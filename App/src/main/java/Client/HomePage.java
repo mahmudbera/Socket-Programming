@@ -6,6 +6,7 @@ package Client;
 
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,38 +16,41 @@ import javax.swing.JOptionPane;
 public class HomePage extends javax.swing.JFrame
 {
 	
-	public static GroupChat groupChat = new GroupChat();
+	public GroupChat groupChat = new GroupChat();
 	
 	public static HomePage HomePage;
 	DefaultListModel DLMUsers;
 	
 	DefaultListModel DLMProjects;
-	ArrayList<GroupChat> ALProjects;
 	
 	DefaultListModel DLMProjectUsers;
-	ArrayList<String> ALProjectUsers;
 	
 	DefaultListModel DLMMyProjects;
 	
 	String userName;
 	
-	public HomePage(String name)
+	Client client;
+	public HomePage(Client client)
 	{
 		initComponents();
+		this.client = client;
+		
 		DLMUsers = new DefaultListModel();
 		
 		
 		DLMProjects = new DefaultListModel();
-		ALProjects = new ArrayList<>();
 		
 		DLMProjectUsers = new DefaultListModel();
-		ALProjectUsers = new ArrayList<>();
 		
 		DLMMyProjects = new DefaultListModel();
 		
 		HomePage = this;
-		this.userName = name;
 		UserList.setModel(DLMUsers);
+	}
+
+	public JLabel getjLabel3()
+	{
+		return jLabel3;
 	}
 
 	/**
@@ -330,18 +334,12 @@ public class HomePage extends javax.swing.JFrame
 	}
     private void EnterAvaliableProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterAvaliableProjectButtonActionPerformed
     {//GEN-HEADEREND:event_EnterAvaliableProjectButtonActionPerformed
-        Request request = new Request(Request.requestType.ClientConnected);
-		request.request = (String) AvailableProjectsList.getSelectedValue();
-		Client.sendToServer(request);
+        
     }//GEN-LAST:event_EnterAvaliableProjectButtonActionPerformed
 
     private void AvailableProjectsListMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_AvailableProjectsListMouseClicked
     {//GEN-HEADEREND:event_AvailableProjectsListMouseClicked
-        AvailableProjectsList.removeAll();
-		DLMProjectUsers.removeAllElements();
-		Request request = new Request(Request.requestType.GetProjectMembers);
-		request.request = AvailableProjectsList.getSelectedValue();
-		Client.sendToServer(request);
+       
     }//GEN-LAST:event_AvailableProjectsListMouseClicked
 
     private void CreateProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_CreateProjectButtonActionPerformed
@@ -351,29 +349,17 @@ public class HomePage extends javax.swing.JFrame
 			this.ALProjects.add(chat);
 			chat.setVisible(true);*/
 			
-			Request request = new Request(Request.requestType.CreateProject);
-			request.request = ProjectNameTextField.getText();
-			Client.sendToServer(request);
+			
     }//GEN-LAST:event_CreateProjectButtonActionPerformed
 
     private void RefreshListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshListButtonActionPerformed
     {//GEN-HEADEREND:event_RefreshListButtonActionPerformed
-		Request request = new Request(Request.requestType.GetProjects);
-		Client.sendToServer(request);
-		AvailableProjectsList.setModel(DLMProjects);
 		
-		JOptionPane.showMessageDialog(null, Integer.toString(DLMProjects.getSize()), "A", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_RefreshListButtonActionPerformed
 
     private void RefreshUserListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshUserListButtonActionPerformed
     {//GEN-HEADEREND:event_RefreshUserListButtonActionPerformed
-        Request request = new Request(Request.requestType.GetAllUsers);
-		Client.sendToServer(request);
-		UserList.setModel(DLMUsers);
-		
-		JOptionPane.showMessageDialog(null, Integer.toString(DLMUsers.getSize()), "A", JOptionPane.WARNING_MESSAGE);
-		
-
+    
     }//GEN-LAST:event_RefreshUserListButtonActionPerformed
 
 	/**

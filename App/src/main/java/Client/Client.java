@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,50 +17,39 @@ import java.util.logging.Logger;
  */
 public class Client implements java.io.Serializable
 {
-	public static Socket socket;
-	public static ObjectInputStream sInput;
-	public static ObjectOutputStream sOutput;
-	public static ServerListener listener;
+	public Socket socket;
+	public ObjectInputStream sInput;
+	public ObjectOutputStream sOutput;
+	public ServerListener listener;
+	public boolean respond = false;
+	public String ip;
+	public int port;
 	
-	public static void Start(String ip, int port, String Name)
+	public Client(String ip, int port, String Name)
 	{
 		try {
-			Client.socket = new Socket(ip, port);
-			Client.sInput = new ObjectInputStream(Client.socket.getInputStream());
-			Client.sOutput = new ObjectOutputStream(Client.socket.getOutputStream());
-			Client.listener = new ServerListener();
-			Client.listener.start();
+			this.port = port;
+			this.ip = ip;
+			this.socket = new Socket(this.ip, this.port);
+			this.sOutput = new ObjectOutputStream(this.socket.getOutputStream());
+			this.sInput = new ObjectInputStream(this.socket.getInputStream());
+			this.listener = new ServerListener(this);
+			this.listener.start();
+			
 			
 			Request request = new Request(Request.requestType.Login);
 			request.request = Name;
-			Client.sendToServer(request);
+			this.sendToServer(request);
 		} catch (IOException ex) {
+			ex.printStackTrace();
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 	
-	public static void checkRegister(String ip, int port, String name)
+	public void sendToServer(Request request)
 	{
 		try {
-			socket = new Socket(ip, port);
-			sInput = new ObjectInputStream(Client.socket.getInputStream());
-			sOutput = new ObjectOutputStream(Client.socket.getOutputStream());
-			listener = new ServerListener();
-			listener.start();
-			
-			Request request = new Request(Request.requestType.Login);
-			request.request = name;
-			Client.sendToServer(request);
-		} catch (IOException ex) {
-			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-	
-	public static void sendToServer(Request request)
-	{
-		try {
-			Client.sOutput.flush();
-			Client.sOutput.writeObject(request);
+			this.sOutput.writeObject(request);
 		} catch (IOException ex) {
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -71,40 +59,26 @@ public class Client implements java.io.Serializable
 
 class ServerListener extends Thread implements java.io.Serializable
 {
+	
+	Client client;
+	
+	public ServerListener(Client client)
+	{
+		this.client = client;
+	}
+	
 	@Override
 	public void run()
 	{
-		while (Client.socket.isConnected()) {			
+		while (this.client.socket.isConnected()) {
 			try {
-				Request request = (Request) Client.sInput.readObject();
-				
+				Request request = (Request) this.client.sInput.readObject();
 				switch (request.thisType) {
 					case Login:
-						Thread.sleep(100);
-						HomePage.HomePage.getUsers((ArrayList<String>) request.request);
-						break;
-					case CreateProject:
-						//LoginPage.nextFrame.groupChat.Refresh();
-						LoginPage.nextFrame.groupChat.ProjectName = request.request.toString();
-						LoginPage.nextFrame.groupChat.setVisible(true);
-						break;
-					case GetAllUsers:
-						for (String string : (ArrayList<String>) request.request) {
-							HomePage.HomePage.DLMUsers.addElement(request);
+						if ((int) request.request == 1) {
+							this.client.respond = true;
 						}
-						break;
-					case GetProjects:
-						for (String string : (ArrayList<String>) request.request) {
-							HomePage.HomePage.DLMProjects.addElement(request);
-						}
-						HomePage.HomePage.RefreshProjects();
-						break;
-					case projectMemberstoChat:
-						LoginPage.nextFrame.groupChat.ALUsers.removeAllElements();
-						ArrayList<String> members = (ArrayList<String>) request.request;
-						for (String member : members) {
-							LoginPage.nextFrame.groupChat.ALUsers.addElement(member);
-						}
+						this.client.respond = true;
 						break;
 					default:
 						throw new AssertionError();
@@ -112,8 +86,6 @@ class ServerListener extends Thread implements java.io.Serializable
 			} catch (IOException ex) {
 				Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (ClassNotFoundException ex) {
-				Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InterruptedException ex) {
 				Logger.getLogger(ServerListener.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}

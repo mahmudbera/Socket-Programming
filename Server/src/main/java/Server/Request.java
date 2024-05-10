@@ -12,7 +12,7 @@ public class Request implements java.io.Serializable
 {
 	public enum requestType
 	{
-		CheckUser, ClientConnected, CreateProject, UserDecline, GetProjects, GetProjectMembers, GetAllUsers, Login, PublicRoomText, projectMemberstoChat
+		Login
 	}
 
 	public requestType thisType;

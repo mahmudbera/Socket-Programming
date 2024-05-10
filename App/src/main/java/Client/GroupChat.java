@@ -97,9 +97,7 @@ public class GroupChat extends javax.swing.JFrame
 	
 	public void Refresh()
 	{
-		Request request = new Request(Request.requestType.projectMemberstoChat);
-		request.request = ProjectName;
-		Client.sendToServer(request);
+		
 	}
 	
     private void SendMessageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendMessageButtonActionPerformed
