@@ -5,6 +5,7 @@
 package Client;
 
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,14 +19,8 @@ public class HomePage extends javax.swing.JFrame
 	
 	public GroupChat groupChat = new GroupChat();
 	
-	public static HomePage HomePage;
-	DefaultListModel DLMUsers;
-	
-	DefaultListModel DLMProjects;
-	
-	DefaultListModel DLMProjectUsers;
-	
-	DefaultListModel DLMMyProjects;
+	public static DefaultListModel DLMUsers;
+	public static DefaultListModel DLMAvailableProjects;
 	
 	String userName;
 	
@@ -34,18 +29,12 @@ public class HomePage extends javax.swing.JFrame
 	{
 		initComponents();
 		this.client = client;
-		
+
 		DLMUsers = new DefaultListModel();
-		
-		
-		DLMProjects = new DefaultListModel();
-		
-		DLMProjectUsers = new DefaultListModel();
-		
-		DLMMyProjects = new DefaultListModel();
-		
-		HomePage = this;
 		UserList.setModel(DLMUsers);
+		
+		DLMAvailableProjects = new DefaultListModel();
+		AvailableProjectsList.setModel(DLMAvailableProjects);
 	}
 
 	public JLabel getjLabel3()
@@ -87,7 +76,6 @@ public class HomePage extends javax.swing.JFrame
         jScrollPane1 = new javax.swing.JScrollPane();
         UserList = new javax.swing.JList<>();
         ChatwithUserButton = new javax.swing.JButton();
-        RefreshUserListButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -251,15 +239,6 @@ public class HomePage extends javax.swing.JFrame
 
         ChatwithUserButton.setText("Chat with Selected");
 
-        RefreshUserListButton.setText("Refresh List");
-        RefreshUserListButton.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                RefreshUserListButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -277,9 +256,7 @@ public class HomePage extends javax.swing.JFrame
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ChatwithUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(RefreshUserListButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(ChatwithUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -291,9 +268,7 @@ public class HomePage extends javax.swing.JFrame
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ChatwithUserButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(RefreshUserListButton)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 140, -1));
@@ -330,8 +305,21 @@ public class HomePage extends javax.swing.JFrame
 	
 	public void RefreshProjects()
 	{
-		AvailableProjectsList.setModel(DLMProjects);
+
 	}
+	
+	public static String generatePassword() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        int length = 5;
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            password.append(characters.charAt(index));
+        }
+        return password.toString();
+    }
+	
     private void EnterAvaliableProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterAvaliableProjectButtonActionPerformed
     {//GEN-HEADEREND:event_EnterAvaliableProjectButtonActionPerformed
         
@@ -344,23 +332,25 @@ public class HomePage extends javax.swing.JFrame
 
     private void CreateProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_CreateProjectButtonActionPerformed
     {//GEN-HEADEREND:event_CreateProjectButtonActionPerformed
-			/*GroupChat chat = new GroupChat(userName, ProjectNameTextField.getText());
-			chat.ALUsers.add(userName);
-			this.ALProjects.add(chat);
-			chat.setVisible(true);*/
-			
-			
+		String password = generatePassword();
+		String projectName = ProjectNameTextField.getText();
+		
+		Request request = new Request(Request.requestType.CreateProject);
+		request.request = projectName + "," + password + "," + this.client.clientName;
+		this.client.sendToServer(request);
+		
+		if (this.client.respond == true) {
+			this.groupChat.setVisible(true);
+			this.client.respond = false; // EN SON BURADA KALDIK.
+		}else{
+			JOptionPane.showMessageDialog(null, "This project name is not available.", "WARNING", JOptionPane.WARNING_MESSAGE);
+		}
     }//GEN-LAST:event_CreateProjectButtonActionPerformed
 
     private void RefreshListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshListButtonActionPerformed
     {//GEN-HEADEREND:event_RefreshListButtonActionPerformed
 		
     }//GEN-LAST:event_RefreshListButtonActionPerformed
-
-    private void RefreshUserListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshUserListButtonActionPerformed
-    {//GEN-HEADEREND:event_RefreshUserListButtonActionPerformed
-    
-    }//GEN-LAST:event_RefreshUserListButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -409,7 +399,6 @@ public class HomePage extends javax.swing.JFrame
     private javax.swing.JList<String> ProjectMembersList;
     private javax.swing.JTextField ProjectNameTextField;
     private javax.swing.JButton RefreshListButton;
-    private javax.swing.JButton RefreshUserListButton;
     private javax.swing.JList<String> UserList;
     private javax.swing.JList<String> UserProjectList;
     private javax.swing.JLabel jLabel1;

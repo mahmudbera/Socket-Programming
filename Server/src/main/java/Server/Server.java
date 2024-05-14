@@ -26,7 +26,7 @@ public class Server
 	public ArrayList<ServerClient> clientList = new ArrayList<>();
 	public ArrayList<Project> projectList = new ArrayList<>();
 	public ServerListener listener;
-	public String text = "respond gelmedi";
+	public String text = "";
 	
 	public void Start(int portNumber)
 	{
@@ -53,9 +53,18 @@ public class Server
 			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-}
-
-class ServerListener extends Thread
+	
+	public void sendToClients(Request request)
+	{
+		for (ServerClient serverClient : clientList) {
+				try {
+					serverClient.sOutput.writeObject(request);
+				} catch (IOException ex) {
+					Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+				}
+		}
+	}
+	public class ServerListener extends Thread
 {
 	Server server;
 	
@@ -79,3 +88,7 @@ class ServerListener extends Thread
 		}
 	}
 }
+	
+}
+
+

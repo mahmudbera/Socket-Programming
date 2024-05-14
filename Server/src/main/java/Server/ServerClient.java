@@ -41,6 +41,15 @@ public class ServerClient implements java.io.Serializable
 		}
 	}
 
+	public void Disconnect()
+	{
+		try {
+			this.socket.close();
+		} catch (IOException ex) {
+			Logger.getLogger(ServerClient.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 	public class ClientListener extends Thread implements java.io.Serializable
 	{
 
@@ -58,24 +67,67 @@ public class ServerClient implements java.io.Serializable
 		{
 			while (serverClient.socket.isConnected()) {
 				try {
-					this.server.text += "+0";
 					Request request = (Request) this.serverClient.sInput.readObject(); // BURASINI ÇÖZEMEDİK
+					this.server.text += "request altı";
 					switch (request.thisType) {
 						case Login:
-							this.server.text += "+2";
-							this.serverClient.clientName = request.request.toString();
-							this.server.text += "+3";
-							Request respond = new Request(Request.requestType.Login);
-							this.server.text += "+4";
-							respond.request = (int) 1;
-							this.server.text += "+5";
-							this.server.sendToClient(serverClient, request);
-							this.server.text += "+6";
+							boolean check = false;
+							for (ServerClient client : this.server.clientList) {
+								if (client.clientName.equals(request.request)) {
+									check = true;
+								}
+							}
+							if (check) {
+								Request loginRespond = new Request(Request.requestType.Login);
+								loginRespond.request = (int) 0; // Olumsuz Cevap
+								this.server.sendToClient(this.serverClient, loginRespond);
+							} else {
+								Request loginRespond = new Request(Request.requestType.Login);
+								loginRespond.request = (int) 1; // Olumlu Cevap
+								this.server.sendToClient(this.serverClient, loginRespond);
+							}
+							break;
+						case ClientConnected:
+							Request respondClientConnected = new Request(Request.requestType.ClientConnected);
+							respondClientConnected.request = this.serverClient.clientName;
+							this.server.sendToClients(respondClientConnected);
+							break;
+						case CreateProject:
+							String all[] = request.request.toString().split(",");
+							String projectName = all[0];
+							String password = all[1];
+							String clientName = all[3];
+
+							boolean checkName = false;
+							for (Project project : this.server.projectList) {
+								if (project.projectName.equals(projectName)) {
+									checkName = true;
+								}
+							}
+
+							if (checkName) {
+								Request respondCreateProject = new Request(Request.requestType.CreateProject);
+								respondCreateProject.request = (int) 0; // Olumsuz
+								this.server.sendToClient(this.serverClient, respondCreateProject);
+							} else {
+								Project project = new Project(clientName, password, clientName);
+								this.server.projectList.add(project);
+								
+								Request respondCreateProject = new Request(Request.requestType.CreateProject);
+								respondCreateProject.request = (int) 1; // Olumlu
+								this.server.sendToClient(this.serverClient, respondCreateProject);
+								
+								Request respondProjectCreated = new Request(Request.requestType.ProjectCreated);
+								respondProjectCreated.request = projectName + " -> " + clientName;
+								this.server.sendToClients(respondProjectCreated);
+							}
+						case ProjectCreated:
+							
 							break;
 						default:
 							throw new AssertionError();
 					}
-					
+
 					this.server.text += "-1";
 				} catch (IOException ex) {
 					Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);

@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 public class LoginPage extends javax.swing.JFrame
 {
 	public HomePage nextFrame;
-	
+	Client client;
 	public LoginPage()
 	{
 		initComponents();
@@ -131,7 +131,12 @@ public class LoginPage extends javax.swing.JFrame
 
     private void SigninButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SigninButtonActionPerformed
     {//GEN-HEADEREND:event_SigninButtonActionPerformed
-        Client client = new Client("13.48.44.132", 5000, SigninNameTextField.getText());
+        client = new Client("13.48.44.132", 5000, SigninNameTextField.getText());
+		
+		Request request = new Request(Request.requestType.Login);
+		request.request = SigninNameTextField.getText();
+		client.sendToServer(request);
+		
 		if (client.respond == true) {
 			nextFrame = new HomePage(client);
 			nextFrame.setVisible(true);

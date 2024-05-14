@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  */
 public class Client implements java.io.Serializable
 {
+
 	public Socket socket;
 	public ObjectInputStream sInput;
 	public ObjectOutputStream sOutput;
@@ -24,28 +25,25 @@ public class Client implements java.io.Serializable
 	public boolean respond = false;
 	public String ip;
 	public int port;
-	
+	public String clientName;
+
 	public Client(String ip, int port, String Name)
 	{
 		try {
 			this.port = port;
 			this.ip = ip;
+			this.clientName = Name;
 			this.socket = new Socket(this.ip, this.port);
 			this.sOutput = new ObjectOutputStream(this.socket.getOutputStream());
 			this.sInput = new ObjectInputStream(this.socket.getInputStream());
 			this.listener = new ServerListener(this);
 			this.listener.start();
-			
-			
-			Request request = new Request(Request.requestType.Login);
-			request.request = Name;
-			this.sendToServer(request);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	public void sendToServer(Request request)
 	{
 		try {
@@ -54,31 +52,58 @@ public class Client implements java.io.Serializable
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
+	public void Stop()
+	{
+		try {
+			if (this.socket != null) {
+				this.socket.close();
+				this.sOutput.close();
+				this.sInput.close();
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+	}
 }
 
 class ServerListener extends Thread implements java.io.Serializable
 {
-	
+
 	Client client;
-	
+
 	public ServerListener(Client client)
 	{
 		this.client = client;
 	}
-	
+
 	@Override
 	public void run()
 	{
 		while (this.client.socket.isConnected()) {
 			try {
-				Request request = (Request) this.client.sInput.readObject();
+				Request request = (Request) client.sInput.readObject();
 				switch (request.thisType) {
 					case Login:
 						if ((int) request.request == 1) {
 							this.client.respond = true;
+							Request loginRespond = new Request(Request.requestType.ClientConnected);
+							this.client.sendToServer(loginRespond);
 						}
-						this.client.respond = true;
+						break;
+					case ClientConnected:
+						HomePage.DLMUsers.addElement(request.request);
+						break;
+					case CreateProject:
+						if ((int) request.request == 1) {
+							this.client.respond = true;
+							
+							Request projectRespond = new Request(Request.requestType.ProjectCreated);
+							this.client.sendToServer(projectRespond);
+						}
+					case ProjectCreated:
+						HomePage.DLMAvailableProjects.addElement(request.request);
 						break;
 					default:
 						throw new AssertionError();
@@ -90,6 +115,5 @@ class ServerListener extends Thread implements java.io.Serializable
 			}
 		}
 	}
-	
+
 }
-		

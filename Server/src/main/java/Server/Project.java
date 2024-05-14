@@ -13,11 +13,14 @@ import java.util.ArrayList;
 public class Project
 {
 	String projectName;
+	String password;
 	ArrayList<String> clientList = new ArrayList<>();
+	ArrayList<String> messageList = new ArrayList<>();
 	
-	public Project(String name, String clientName)
+	public Project(String name, String password, String clientName)
 	{
 		this.projectName = name;
+		this.password = password;
 		clientList.add(clientName);
 	}
 }

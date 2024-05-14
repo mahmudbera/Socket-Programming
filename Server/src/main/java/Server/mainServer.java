@@ -81,7 +81,7 @@ public class mainServer extends javax.swing.JFrame
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
     {//GEN-HEADEREND:event_jButton1ActionPerformed
-        this.server = new Server();
+        server = new Server();
 		server.Start(5000);
 		JOptionPane.showMessageDialog(null, "başladı", "başladı", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_jButton1ActionPerformed
