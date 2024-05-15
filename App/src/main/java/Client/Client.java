@@ -120,14 +120,47 @@ class ServerListener extends Thread implements java.io.Serializable
 						break;
 					
 					case CreateProject:
-						if ((int) request.request == 1) {
-							this.client.respond = true;
-							
-							Request projectRespond = new Request(Request.requestType.ProjectCreated);
-							this.client.sendToServer(projectRespond);
+						if (request.request.equals(true)) {
+							HomePage.groupChat = new GroupChat(this.client);
+							HomePage.groupChat.setVisible(true);
+							HomePage.groupChat.ProjectName = request.projectName;
+							HomePage.groupChat.ClientName = this.client.clientName;
+							HomePage.DLMUserProjects.addElement(request.projectName + " -> " + request.password);
 						}
+						break;
+					case EnterGroupChat:
+						if (request.request.equals(true)) {
+							HomePage.groupChat = new GroupChat(client);
+							HomePage.groupChat.ProjectName = request.projectName.toString();
+							HomePage.groupChat.setVisible(true);
+							HomePage.groupChat.getMessages();
+						}
+						break;
+					case GetProjects:
+						ArrayList<String> projectNames = (ArrayList<String>) request.request;
+						HomePage.DLMAvailableProjects.removeAllElements();
+						for (String projectName : projectNames) {
+							HomePage.DLMAvailableProjects.addElement(projectName);
+						}
+						break;
+					case GetProjectMembers:
+						HomePage.getProjectUsers((ArrayList<String>) request.request);
+						break;
 					case ProjectCreated:
 						HomePage.DLMAvailableProjects.addElement(request.request);
+						break;
+						
+					case SendMessageToGroup:
+						if (HomePage.groupChat.isVisible() == true) {
+							HomePage.groupChat.DLMMessageList.addElement(request.request);
+						}
+						break;
+					case GetGroupMessages:
+						ArrayList<String> messages = (ArrayList<String>) request.request;
+						HomePage.groupChat.DLMMessageList.removeAllElements();
+						for (String message : messages) {
+							HomePage.groupChat.DLMMessageList.addElement(message);
+						}
 						break;
 					default:
 						throw new AssertionError();

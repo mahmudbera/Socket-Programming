@@ -10,6 +10,7 @@ import java.util.Random;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -17,15 +18,17 @@ import javax.swing.JOptionPane;
  */
 public class HomePage extends javax.swing.JFrame
 {
-	
-	public GroupChat groupChat = new GroupChat();
-	
+
+	public static GroupChat groupChat;
+
 	public static DefaultListModel DLMUsers;
 	public static DefaultListModel DLMAvailableProjects;
-	
+	public static DefaultListModel DLMAvailableProjectUsers;
+	public static DefaultListModel DLMUserProjects;
+
 	String userName;
-	
 	Client client;
+
 	public HomePage(Client client)
 	{
 		initComponents();
@@ -33,17 +36,18 @@ public class HomePage extends javax.swing.JFrame
 
 		DLMUsers = new DefaultListModel();
 		UserList.setModel(DLMUsers);
-		
+
 		DLMAvailableProjects = new DefaultListModel();
 		AvailableProjectsList.setModel(DLMAvailableProjects);
-		
+
+		DLMAvailableProjectUsers = new DefaultListModel();
+		ProjectMembersList.setModel(DLMAvailableProjectUsers);
+
+		DLMUserProjects = new DefaultListModel();
+		UserProjectList.setModel(DLMUserProjects);
+
 		getUsers();
-	}
-	
-	public void getUsers()
-	{
-		Request request = new Request(Request.requestType.GetUsers);
-		this.client.sendToServer(request);
+		getProjects();
 	}
 
 	/**
@@ -66,7 +70,7 @@ public class HomePage extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         ProjectMembersList = new javax.swing.JList<>();
-        RefreshListButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         UserProjectList = new javax.swing.JList<>();
@@ -116,12 +120,12 @@ public class HomePage extends javax.swing.JFrame
         ProjectMembersList.setEnabled(false);
         jScrollPane3.setViewportView(ProjectMembersList);
 
-        RefreshListButton.setText("Refresh List");
-        RefreshListButton.addActionListener(new java.awt.event.ActionListener()
+        jButton1.setText("Refresh");
+        jButton1.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                RefreshListButtonActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -132,15 +136,15 @@ public class HomePage extends javax.swing.JFrame
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(RefreshListButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
                         .addComponent(jLabel2))
+                    .addComponent(EnterAvaliableProjectButton)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(162, 162, 162)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(EnterAvaliableProjectButton))
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(64, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -156,7 +160,7 @@ public class HomePage extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(EnterAvaliableProjectButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(RefreshListButton)
+                .addComponent(jButton1)
                 .addContainerGap(36, Short.MAX_VALUE))
         );
 
@@ -165,6 +169,13 @@ public class HomePage extends javax.swing.JFrame
         jScrollPane4.setViewportView(UserProjectList);
 
         EnteringProjectChatButton.setText("Enter Project Chat");
+        EnteringProjectChatButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                EnteringProjectChatButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -302,71 +313,90 @@ public class HomePage extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-	
-	
-	public void getUsers(ArrayList<String> usersArrayList)
-	{
-		DLMUsers.removeAllElements();
-		UserList.removeAll();
-		for (String string : usersArrayList) {
-			DLMUsers.addElement(string);
-		}
-		UserList.setModel(DLMUsers);
-	}
-	
-	public void RefreshProjects()
-	{
 
+	public void getUsers()
+	{
+		Request request = new Request(Request.requestType.GetUsers);
+		this.client.sendToServer(request);
 	}
-	
-	public static String generatePassword() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new Random();
-        int length = 5;
-        StringBuilder password = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(characters.length());
-            password.append(characters.charAt(index));
-        }
-        return password.toString();
-    }
-	
+
+	public void getProjects()
+	{
+		Request request = new Request(Request.requestType.GetProjects);
+		this.client.sendToServer(request);
+	}
+
+	public static void getProjectUsers(ArrayList<String> projectMemberList)
+	{
+		DLMAvailableProjectUsers.removeAllElements();
+		for (String string : projectMemberList) {
+			DLMAvailableProjectUsers.addElement(string);
+		}
+	}
+
+	public static String generatePassword()
+	{
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		Random random = new Random();
+		int length = 5;
+		StringBuilder password = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			int index = random.nextInt(characters.length());
+			password.append(characters.charAt(index));
+		}
+		return password.toString();
+	}
+
     private void EnterAvaliableProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterAvaliableProjectButtonActionPerformed
     {//GEN-HEADEREND:event_EnterAvaliableProjectButtonActionPerformed
-        
+		if (!AvailableProjectsList.isSelectionEmpty()) {
+			String passwordInput = JOptionPane.showInputDialog(null, "Please enter a password");
+			Request request = new Request(Request.requestType.EnterGroupChat);
+			request.password = passwordInput;
+			request.projectName = AvailableProjectsList.getSelectedValue();
+			System.out.println(AvailableProjectsList.getSelectedValue());
+			request.request = this.client.clientName;
+			this.client.sendToServer(request);
+		}
     }//GEN-LAST:event_EnterAvaliableProjectButtonActionPerformed
 
     private void AvailableProjectsListMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_AvailableProjectsListMouseClicked
     {//GEN-HEADEREND:event_AvailableProjectsListMouseClicked
-       
+		Request request = new Request(Request.requestType.GetProjectMembers);
+		request.request = AvailableProjectsList.getSelectedValue();
+		this.client.sendToServer(request);
     }//GEN-LAST:event_AvailableProjectsListMouseClicked
 
     private void CreateProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_CreateProjectButtonActionPerformed
     {//GEN-HEADEREND:event_CreateProjectButtonActionPerformed
 		String password = generatePassword();
 		String projectName = ProjectNameTextField.getText();
-		
 		Request request = new Request(Request.requestType.CreateProject);
 		request.request = projectName + "," + password + "," + this.client.clientName;
 		this.client.sendToServer(request);
-		
-		if (this.client.respond == false) {
-			this.groupChat.setVisible(true);
-			this.client.respond = false; // EN SON BURADA KALDIK.
-		}else{
-			JOptionPane.showMessageDialog(null, "This project name is not available.", "WARNING", JOptionPane.WARNING_MESSAGE);
-		}
     }//GEN-LAST:event_CreateProjectButtonActionPerformed
-
-    private void RefreshListButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_RefreshListButtonActionPerformed
-    {//GEN-HEADEREND:event_RefreshListButtonActionPerformed
-		
-    }//GEN-LAST:event_RefreshListButtonActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
     {//GEN-HEADEREND:event_formWindowClosing
-        this.client.Stop();
+		this.client.Stop();
     }//GEN-LAST:event_formWindowClosing
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+    {//GEN-HEADEREND:event_jButton1ActionPerformed
+		getProjects();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void EnteringProjectChatButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnteringProjectChatButtonActionPerformed
+    {//GEN-HEADEREND:event_EnteringProjectChatButtonActionPerformed
+        if (!UserProjectList.isSelectionEmpty()) {
+			String strings[] = UserProjectList.getSelectedValue().split(" -> ");
+			Request request = new Request(Request.requestType.EnterGroupChat);
+			request.projectName = strings[0];
+			request.request = this.client.clientName;
+			request.checkPassword = false;
+			this.client.sendToServer(request);
+		}
+    }//GEN-LAST:event_EnteringProjectChatButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -401,9 +431,14 @@ public class HomePage extends javax.swing.JFrame
 		{
 			public void run()
 			{
-				
+
 			}
 		});
+	}
+
+	public JTextField getProjectNameTextField()
+	{
+		return ProjectNameTextField;
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -414,9 +449,9 @@ public class HomePage extends javax.swing.JFrame
     private javax.swing.JButton EnteringProjectChatButton;
     private javax.swing.JList<String> ProjectMembersList;
     private javax.swing.JTextField ProjectNameTextField;
-    private javax.swing.JButton RefreshListButton;
     private javax.swing.JList<String> UserList;
     private javax.swing.JList<String> UserProjectList;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

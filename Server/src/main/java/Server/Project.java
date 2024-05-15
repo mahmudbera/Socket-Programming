@@ -14,6 +14,7 @@ public class Project
 {
 	String projectName;
 	String password;
+	String owner;
 	ArrayList<String> clientList = new ArrayList<>();
 	ArrayList<String> messageList = new ArrayList<>();
 	
@@ -22,5 +23,6 @@ public class Project
 		this.projectName = name;
 		this.password = password;
 		clientList.add(clientName);
+		this.owner = clientName;
 	}
 }

@@ -14,11 +14,18 @@ public class Request implements java.io.Serializable
 	public enum requestType
 	{
 		Login, ClientConnected, GetUsers, ClientDisconnected,
-		CreateProject, ProjectCreated
+		CreateProject, GetProjects, GetProjectMembers, ProjectCreated, EnterGroupChat, 
+		GetGroupMessages, SendMessageToGroup
 	}
 
 	public requestType thisType;
 	public Object request;
+	
+	public Object client;
+	public String projectName; // HomePage My Project sekmesine ekleme yapmak için kullandım.	
+	public String password;
+	
+	public boolean checkPassword = true;
 	
 	public Request(requestType type)
 	{

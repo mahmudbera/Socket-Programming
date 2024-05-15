@@ -4,6 +4,7 @@
  */
 package Client;
 
+import Message.Request;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -14,16 +15,31 @@ import javax.swing.JFrame;
  */
 public class GroupChat extends javax.swing.JFrame
 {
-	DefaultListModel ALUsers = new DefaultListModel();;
 	String ProjectName;
+	String ClientName;
+	Client client;
+	public static DefaultListModel DLMMessageList;
 	
-	public GroupChat()
+	public GroupChat(Client client)
 	{
 		initComponents();
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		UsersList.setModel(ALUsers);
+		this.client = client;
+		DLMMessageList = new DefaultListModel();
+		MessagesList.setModel(DLMMessageList);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
+	public void getMessages()
+	{
+		Request request = new Request(Request.requestType.GetGroupMessages);
+		request.projectName = ProjectName;
+		this.client.sendToServer(request);
+	}
+	
+	public void Refresh()
+	{
+		MessagesList.setModel(DLMMessageList);
+	}
 	
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -41,10 +57,6 @@ public class GroupChat extends javax.swing.JFrame
         MessageTextField = new javax.swing.JTextField();
         SendMessageButton = new javax.swing.JButton();
         SendFileButton = new javax.swing.JButton();
-        BackHomeButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        UsersList = new javax.swing.JList<>();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -69,21 +81,11 @@ public class GroupChat extends javax.swing.JFrame
         SendFileButton.setText("File");
         jPanel1.add(SendFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 280, 85, -1));
 
-        BackHomeButton.setText("<");
-        jPanel1.add(BackHomeButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 40, -1));
-
-        jScrollPane2.setViewportView(UsersList);
-
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 30, 70, 200));
-
-        jLabel1.setText("Users in Chat");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 10, -1, -1));
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,14 +97,15 @@ public class GroupChat extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 	
-	public void Refresh()
-	{
-		
-	}
-	
     private void SendMessageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendMessageButtonActionPerformed
     {//GEN-HEADEREND:event_SendMessageButtonActionPerformed
-        
+        String message = this.client.clientName + ":" + MessageTextField.getText();
+		Refresh();
+		Request request = new Request(Request.requestType.SendMessageToGroup);
+		request.request = message;
+		request.projectName = ProjectName;
+		this.client.sendToServer(request);
+		MessageTextField.setText("");
     }//GEN-LAST:event_SendMessageButtonActionPerformed
 
 	/**
@@ -138,21 +141,16 @@ public class GroupChat extends javax.swing.JFrame
 		{
 			public void run()
 			{
-				new GroupChat().setVisible(true);
 			}
 		});
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BackHomeButton;
     private javax.swing.JTextField MessageTextField;
     private javax.swing.JList<String> MessagesList;
     private javax.swing.JButton SendFileButton;
     private javax.swing.JButton SendMessageButton;
-    private javax.swing.JList<String> UsersList;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }
