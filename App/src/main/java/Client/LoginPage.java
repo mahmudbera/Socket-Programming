@@ -4,6 +4,7 @@
  */
 package Client;
 
+import Message.Request;
 import javax.swing.JOptionPane;
 
 /**

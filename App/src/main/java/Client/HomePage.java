@@ -4,6 +4,7 @@
  */
 package Client;
 
+import Message.Request;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.DefaultListModel;
@@ -35,11 +36,14 @@ public class HomePage extends javax.swing.JFrame
 		
 		DLMAvailableProjects = new DefaultListModel();
 		AvailableProjectsList.setModel(DLMAvailableProjects);
+		
+		getUsers();
 	}
-
-	public JLabel getjLabel3()
+	
+	public void getUsers()
 	{
-		return jLabel3;
+		Request request = new Request(Request.requestType.GetUsers);
+		this.client.sendToServer(request);
 	}
 
 	/**
@@ -78,6 +82,13 @@ public class HomePage extends javax.swing.JFrame
         ChatwithUserButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -339,7 +350,7 @@ public class HomePage extends javax.swing.JFrame
 		request.request = projectName + "," + password + "," + this.client.clientName;
 		this.client.sendToServer(request);
 		
-		if (this.client.respond == true) {
+		if (this.client.respond == false) {
 			this.groupChat.setVisible(true);
 			this.client.respond = false; // EN SON BURADA KALDIK.
 		}else{
@@ -351,6 +362,11 @@ public class HomePage extends javax.swing.JFrame
     {//GEN-HEADEREND:event_RefreshListButtonActionPerformed
 		
     }//GEN-LAST:event_RefreshListButtonActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+        this.client.Stop();
+    }//GEN-LAST:event_formWindowClosing
 
 	/**
 	 * @param args the command line arguments

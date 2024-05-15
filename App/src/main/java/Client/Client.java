@@ -4,12 +4,15 @@
  */
 package Client;
 
+import Message.Request;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.security.auth.login.LoginContext;
 
 /**
  *
@@ -57,6 +60,10 @@ public class Client implements java.io.Serializable
 	{
 		try {
 			if (this.socket != null) {
+				Request request = new Request(Request.requestType.ClientDisconnected);
+				request.request = this.clientName;
+				this.sendToServer(request);
+				
 				this.socket.close();
 				this.sOutput.close();
 				this.sInput.close();
@@ -86,15 +93,32 @@ class ServerListener extends Thread implements java.io.Serializable
 				Request request = (Request) client.sInput.readObject();
 				switch (request.thisType) {
 					case Login:
-						if ((int) request.request == 1) {
+						if ((boolean) request.request == true) {
 							this.client.respond = true;
 							Request loginRespond = new Request(Request.requestType.ClientConnected);
 							this.client.sendToServer(loginRespond);
+							Login.nextFrame = new HomePage(this.client);
+							Login.nextFrame.setVisible(true);
 						}
 						break;
 					case ClientConnected:
-						HomePage.DLMUsers.addElement(request.request);
+						HomePage.DLMUsers.addElement((String) request.request);
 						break;
+					case GetUsers:
+						ArrayList<String> userNames = (ArrayList<String>) request.request;
+						HomePage.DLMUsers.removeAllElements();
+						for (String name : userNames) {
+							HomePage.DLMUsers.addElement(name);
+						}
+						break;
+					case ClientDisconnected:
+						for (int i = 0; i < HomePage.DLMUsers.size(); i++) {
+							if (HomePage.DLMUsers.getElementAt(i).equals(request.request)) {
+								HomePage.DLMUsers.removeElementAt(i);
+							}
+						}
+						break;
+					
 					case CreateProject:
 						if ((int) request.request == 1) {
 							this.client.respond = true;

@@ -4,6 +4,7 @@
  */
 package Server;
 
+import Message.Request;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,7 +27,6 @@ public class Server
 	public ArrayList<ServerClient> clientList = new ArrayList<>();
 	public ArrayList<Project> projectList = new ArrayList<>();
 	public ServerListener listener;
-	public String text = "";
 	
 	public void Start(int portNumber)
 	{
@@ -38,11 +38,6 @@ public class Server
 		} catch (IOException ex) {
 			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
 		}
-	}
-	
-	public String getText()
-	{
-		return this.text;
 	}
 	
 	public void sendToClient(ServerClient client, Request request)

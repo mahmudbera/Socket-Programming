@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import Message.Request;
 
 /**
  *
@@ -67,24 +68,30 @@ public class ServerClient implements java.io.Serializable
 		{
 			while (serverClient.socket.isConnected()) {
 				try {
-					Request request = (Request) this.serverClient.sInput.readObject(); // BURASINI ÇÖZEMEDİK
-					this.server.text += "request altı";
+					Request request = (Request) this.serverClient.sInput.readObject();
 					switch (request.thisType) {
 						case Login:
 							boolean check = false;
+							String name = request.request.toString();
+							this.serverClient.clientName = name;
 							for (ServerClient client : this.server.clientList) {
-								if (client.clientName.equals(request.request)) {
+								if (client.clientName.equals(name) && !client.equals(this.serverClient)) {
 									check = true;
+									System.out.println(client.clientName);
 								}
 							}
-							if (check) {
-								Request loginRespond = new Request(Request.requestType.Login);
-								loginRespond.request = (int) 0; // Olumsuz Cevap
+
+							Request loginRespond;
+							if (check == true) {
+								loginRespond = new Request(Request.requestType.Login);
+								loginRespond.request = false; // Olumsuz Cevap
 								this.server.sendToClient(this.serverClient, loginRespond);
+								System.out.println("true");
 							} else {
-								Request loginRespond = new Request(Request.requestType.Login);
-								loginRespond.request = (int) 1; // Olumlu Cevap
+								loginRespond = new Request(Request.requestType.Login);
+								loginRespond.request = true; // Olumlu Cevap
 								this.server.sendToClient(this.serverClient, loginRespond);
+								System.out.println("false");
 							}
 							break;
 						case ClientConnected:
@@ -92,6 +99,22 @@ public class ServerClient implements java.io.Serializable
 							respondClientConnected.request = this.serverClient.clientName;
 							this.server.sendToClients(respondClientConnected);
 							break;
+						case GetUsers:
+							ArrayList<String> userNames = new ArrayList<>();
+							for (ServerClient serverClient : this.server.clientList) {
+								userNames.add(serverClient.clientName);
+							}
+							Request respondGetUsers = new Request(Request.requestType.GetUsers);
+							respondGetUsers.request = userNames;
+							this.server.sendToClient(this.serverClient, respondGetUsers);
+							break;
+						case ClientDisconnected:	
+							Request respondClientDisconnected = new Request(Request.requestType.ClientDisconnected);
+							respondClientDisconnected.request = request.request;
+							this.server.sendToClients(respondClientDisconnected);
+							this.serverClient.Disconnect();
+							break;
+							
 						case CreateProject:
 							String all[] = request.request.toString().split(",");
 							String projectName = all[0];
@@ -105,30 +128,26 @@ public class ServerClient implements java.io.Serializable
 								}
 							}
 
-							if (checkName) {
+							if (checkName == true) {
 								Request respondCreateProject = new Request(Request.requestType.CreateProject);
-								respondCreateProject.request = (int) 0; // Olumsuz
+								respondCreateProject.request = false; // Olumsuz
 								this.server.sendToClient(this.serverClient, respondCreateProject);
 							} else {
 								Project project = new Project(clientName, password, clientName);
 								this.server.projectList.add(project);
 								
 								Request respondCreateProject = new Request(Request.requestType.CreateProject);
-								respondCreateProject.request = (int) 1; // Olumlu
+								respondCreateProject.request = true; // Olumlu
 								this.server.sendToClient(this.serverClient, respondCreateProject);
 								
 								Request respondProjectCreated = new Request(Request.requestType.ProjectCreated);
 								respondProjectCreated.request = projectName + " -> " + clientName;
+								System.out.println("A");
 								this.server.sendToClients(respondProjectCreated);
 							}
-						case ProjectCreated:
-							
-							break;
 						default:
 							throw new AssertionError();
 					}
-
-					this.server.text += "-1";
 				} catch (IOException ex) {
 					Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
 				} catch (ClassNotFoundException ex) {

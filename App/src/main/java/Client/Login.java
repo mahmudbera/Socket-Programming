@@ -4,6 +4,10 @@
  */
 package Client;
 
+import Message.Request;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,7 +17,7 @@ import javax.swing.JOptionPane;
 public class Login extends javax.swing.JFrame
 {
 
-	public HomePage nextFrame;
+	public static HomePage nextFrame;
 	Client client;
 	
 	public Login()
@@ -101,20 +105,11 @@ public class Login extends javax.swing.JFrame
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_LoginButtonActionPerformed
     {//GEN-HEADEREND:event_LoginButtonActionPerformed
-        this.client = new Client("13.48.44.132", 5000, UsernameTextField.getText().trim());
-		
+       // this.client = new Client("13.48.44.132", 5000, UsernameTextField.getText().trim());
+		this.client = new Client("localhost", 5000, UsernameTextField.getText().trim());
 		Request request = new Request(Request.requestType.Login);
 		request.request = UsernameTextField.getText().trim();
 		this.client.sendToServer(request);
-		
-		if (this.client.respond == true) {
-			nextFrame = new HomePage(client);
-			nextFrame.setVisible(true);
-			this.dispose();
-			this.client.respond = false;
-		}else{
-			JOptionPane.showMessageDialog(null, "Username is not available", "Warning", JOptionPane.WARNING_MESSAGE);
-		}
     }//GEN-LAST:event_LoginButtonActionPerformed
 
 	/**
