@@ -150,6 +150,11 @@ class ServerListener extends Thread implements java.io.Serializable
 						HomePage.DLMAvailableProjects.addElement(request.request);
 						break;
 						
+					case SendPersonalMessage:
+						if (HomePage.personalChat != null && HomePage.personalChat.isVisible() == true) {
+							HomePage.personalChat.DLMMessagesList.addElement(request.request);
+						}
+						break;
 					case SendMessageToGroup:
 						if (HomePage.groupChat.isVisible() == true) {
 							HomePage.groupChat.DLMMessageList.addElement(request.request);
@@ -161,6 +166,20 @@ class ServerListener extends Thread implements java.io.Serializable
 						for (String message : messages) {
 							HomePage.groupChat.DLMMessageList.addElement(message);
 						}
+						break;
+					case GetPrivateMessages:
+						ArrayList<String> pMessages = (ArrayList<String>) request.request;
+						HomePage.personalChat.DLMMessagesList.removeAllElements();
+						for (String pMessage : pMessages) {
+							HomePage.personalChat.DLMMessagesList.addElement(pMessage);
+						}
+						break;
+						
+					case LoginPrivateChat:
+						HomePage.personalChat = new PersonalChat(this.client);
+						HomePage.personalChat.ToClient = request.request.toString();
+						HomePage.personalChat.setVisible(true);
+						HomePage.personalChat.getMessages();
 						break;
 					default:
 						throw new AssertionError();

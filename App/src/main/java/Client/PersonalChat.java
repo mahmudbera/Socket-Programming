@@ -4,6 +4,10 @@
  */
 package Client;
 
+import Message.Request;
+import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+
 /**
  *
  * @author mbera
@@ -11,14 +15,33 @@ package Client;
 public class PersonalChat extends javax.swing.JFrame
 {
 
+	Client client;
+	public static String ToClient;
+	public static DefaultListModel DLMMessagesList;
+	
 	/**
 	 * Creates new form PersonalChat
 	 */
-	public PersonalChat()
+	public PersonalChat(Client client)
 	{
 		initComponents();
+		this.client = client;
+		this.setLocationRelativeTo(null);
+		
+		DLMMessagesList = new DefaultListModel();
+		MessagesList.setModel(DLMMessagesList);
+		
+		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
-
+	
+	public void getMessages()
+	{
+		Request request = new Request(Request.requestType.GetPrivateMessages);
+		request.request = this.client.clientName + "," + ToClient;
+		this.client.sendToServer(request);
+	}
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,7 +58,6 @@ public class PersonalChat extends javax.swing.JFrame
         MessageTextField = new javax.swing.JTextField();
         SendMessageButton = new javax.swing.JButton();
         SendFileButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -60,9 +82,6 @@ public class PersonalChat extends javax.swing.JFrame
         SendFileButton.setText("File");
         jPanel1.add(SendFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 280, 85, -1));
 
-        jButton1.setText("<");
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 40, -1));
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -81,7 +100,13 @@ public class PersonalChat extends javax.swing.JFrame
 
     private void SendMessageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendMessageButtonActionPerformed
     {//GEN-HEADEREND:event_SendMessageButtonActionPerformed
-        // TODO add your handling code here:
+		String message = this.client.clientName + ":"+ MessageTextField.getText();
+		Request request = new Request(Request.requestType.SendPersonalMessage);
+		request.request = message;
+		request.clientName = ToClient;
+		this.client.sendToServer(request);
+		MessageTextField.setText("");
+		DLMMessagesList.addElement(message);
     }//GEN-LAST:event_SendMessageButtonActionPerformed
 
 	/**
@@ -117,9 +142,6 @@ public class PersonalChat extends javax.swing.JFrame
 		{
 			public void run()
 			{
-				PersonalChat thisFrame = new PersonalChat();
-				thisFrame.setVisible(true);
-				thisFrame.setLocationRelativeTo(null);
 			}
 		});
 	}
@@ -129,7 +151,6 @@ public class PersonalChat extends javax.swing.JFrame
     private javax.swing.JList<String> MessagesList;
     private javax.swing.JButton SendFileButton;
     private javax.swing.JButton SendMessageButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

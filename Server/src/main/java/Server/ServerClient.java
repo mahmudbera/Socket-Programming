@@ -77,7 +77,6 @@ public class ServerClient implements java.io.Serializable
 							for (ServerClient client : this.server.clientList) {
 								if (client.clientName.equals(name) && !client.equals(this.serverClient)) {
 									check = true;
-									System.out.println(client.clientName);
 								}
 							}
 
@@ -147,7 +146,7 @@ public class ServerClient implements java.io.Serializable
 							}
 						case EnterGroupChat:
 							boolean enterCheck = false;
-							if (request.checkPassword == true) {	
+							if (request.checkPassword == true) {
 								for (Project enProject : this.server.projectList) {
 									if (enProject.projectName.equals(request.projectName) && enProject.password.equals(request.password)) {
 										enterCheck = true;
@@ -162,8 +161,7 @@ public class ServerClient implements java.io.Serializable
 										}
 									}
 								}
-							}
-							else{
+							} else {
 								enterCheck = true;
 							}
 
@@ -203,6 +201,24 @@ public class ServerClient implements java.io.Serializable
 							this.server.sendToClient(this.serverClient, projectMembersRespond);
 							break;
 
+						case SendPersonalMessage:
+							ServerClient serverToClient = null;
+							for (ServerClient sClient : this.server.clientList) {
+								if (sClient.clientName.equals(request.clientName)) {
+									serverToClient = sClient;
+								}
+							}
+							if (serverToClient != null) {
+								String personelMessage = request.request.toString();
+								Request respondSendPersonalMessage = new Request(Request.requestType.SendPersonalMessage);
+								respondSendPersonalMessage.request = personelMessage;
+								this.server.sendToClient(serverToClient, respondSendPersonalMessage);
+
+								Private temp = this.server.getPrivate(this.serverClient.clientName, request.clientName);
+								temp.messages.add(personelMessage);
+							}
+							break;
+
 						case SendMessageToGroup:
 							String message = request.request.toString();
 							for (Project project : this.server.projectList) {
@@ -219,15 +235,11 @@ public class ServerClient implements java.io.Serializable
 							}
 							break;
 						case GetGroupMessages:
-							System.out.println("GEldim");
 							ArrayList<String> groupMessages = new ArrayList<>();
 							for (Project mProject : this.server.projectList) {
-								System.out.println("GEldim2");
 								System.out.println(request.projectName);
 								if (mProject.projectName.equals(request.projectName)) {
-									System.out.println("GEldim3");
 									for (String groupMessage : mProject.messageList) {
-										System.out.println("GEldim4");
 										groupMessages.add(groupMessage);
 									}
 								}
@@ -235,6 +247,39 @@ public class ServerClient implements java.io.Serializable
 							Request respondGetGroupMessages = new Request(Request.requestType.GetGroupMessages);
 							respondGetGroupMessages.request = groupMessages;
 							this.server.sendToClient(this.serverClient, respondGetGroupMessages);
+							break;
+						case GetPrivateMessages:
+							String clientNames[] = request.request.toString().split(",");
+							String c1 = clientNames[0];
+							String c2 = clientNames[1];
+							ArrayList<String> privateMessages = new ArrayList<>();
+
+							for (Private chat : this.server.privateList) {
+								if ((chat.client1.equals(c1) || chat.client2.equals(c1))
+										&& (chat.client1.equals(c2) || chat.client1.equals(c2))) {
+									for (String message1 : chat.messages) {
+										privateMessages.add(message1);
+									}
+								}
+							}
+							Request respondGetPrivateMessages = new Request(Request.requestType.GetPrivateMessages);
+							respondGetPrivateMessages.request = privateMessages;
+							this.server.sendToClient(this.serverClient, respondGetPrivateMessages);
+							break;
+
+						case LoginPrivateChat:
+							String names[] = request.request.toString().split(",");
+							String client1 = names[0];
+							String client2 = names[1];
+
+							boolean chatCheck = this.server.privateExist(client1, client2);
+							if (chatCheck == false) {
+								Private newPrivate = new Private(client1, client2);
+								this.server.privateList.add(newPrivate);
+							}
+							Request respondLoginPrivateChat = new Request(Request.requestType.LoginPrivateChat);
+							respondLoginPrivateChat.request = client2;
+							this.server.sendToClient(this.serverClient, respondLoginPrivateChat);
 							break;
 						default:
 							throw new AssertionError();

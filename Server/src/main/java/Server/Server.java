@@ -27,6 +27,7 @@ public class Server
 	public int clientNumber = 0;
 	public ArrayList<ServerClient> clientList = new ArrayList<>();
 	public ArrayList<Project> projectList = new ArrayList<>();
+	public ArrayList<Private> privateList = new ArrayList<>();
 	public ServerListener listener;
 
 	public void Start(int portNumber)
@@ -74,6 +75,28 @@ public class Server
 		}
 	}
 
+	public Private getPrivate(String client1, String client2)
+	{
+		for (Private p : this.privateList) {
+			if ((p.client1.equals(client1) || p.client2.equals(client1))
+				&& (p.client1.equals(client2) || p.client2.equals(client2))) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
+	public boolean privateExist(String client1, String client2)
+	{
+		for (Private p : this.privateList) {
+			if ((p.client1.equals(client1) || p.client2.equals(client1))
+				&& (p.client1.equals(client2) || p.client2.equals(client2))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public class ServerListener extends Thread
 	{
 

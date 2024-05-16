@@ -15,7 +15,8 @@ public class Request implements java.io.Serializable
 	{
 		Login, ClientConnected, GetUsers, ClientDisconnected,
 		CreateProject, GetProjects, GetProjectMembers, ProjectCreated, EnterGroupChat, 
-		GetGroupMessages, SendMessageToGroup
+		GetGroupMessages, GetPrivateMessages, SendPersonalMessage, SendMessageToGroup, 
+		LoginPrivateChat
 	}
 
 	public requestType thisType;
@@ -26,6 +27,8 @@ public class Request implements java.io.Serializable
 	public String password;
 	
 	public boolean checkPassword = true;
+	
+	public String clientName;
 	
 	public Request(requestType type)
 	{

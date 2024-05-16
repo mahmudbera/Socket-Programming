@@ -20,7 +20,8 @@ public class HomePage extends javax.swing.JFrame
 {
 
 	public static GroupChat groupChat;
-
+	public static PersonalChat personalChat;
+	
 	public static DefaultListModel DLMUsers;
 	public static DefaultListModel DLMAvailableProjects;
 	public static DefaultListModel DLMAvailableProjectUsers;
@@ -260,6 +261,13 @@ public class HomePage extends javax.swing.JFrame
         jScrollPane1.setViewportView(UserList);
 
         ChatwithUserButton.setText("Chat with Selected");
+        ChatwithUserButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                ChatwithUserButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -397,6 +405,16 @@ public class HomePage extends javax.swing.JFrame
 			this.client.sendToServer(request);
 		}
     }//GEN-LAST:event_EnteringProjectChatButtonActionPerformed
+
+    private void ChatwithUserButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ChatwithUserButtonActionPerformed
+    {//GEN-HEADEREND:event_ChatwithUserButtonActionPerformed
+		if (!UserList.isSelectionEmpty()) {
+			String ToClient = UserList.getSelectedValue();
+			Request request = new Request(Request.requestType.LoginPrivateChat);
+			request.request = this.client.clientName + "," + ToClient;
+			this.client.sendToServer(request);
+		}
+    }//GEN-LAST:event_ChatwithUserButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
