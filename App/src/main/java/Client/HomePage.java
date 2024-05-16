@@ -343,7 +343,7 @@ public class HomePage extends javax.swing.JFrame
 		}
 		return password.toString();
 	}
-
+	
     private void EnterAvaliableProjectButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnterAvaliableProjectButtonActionPerformed
     {//GEN-HEADEREND:event_EnterAvaliableProjectButtonActionPerformed
 		if (!AvailableProjectsList.isSelectionEmpty()) {
@@ -351,7 +351,6 @@ public class HomePage extends javax.swing.JFrame
 			Request request = new Request(Request.requestType.EnterGroupChat);
 			request.password = passwordInput;
 			request.projectName = AvailableProjectsList.getSelectedValue();
-			System.out.println(AvailableProjectsList.getSelectedValue());
 			request.request = this.client.clientName;
 			this.client.sendToServer(request);
 		}

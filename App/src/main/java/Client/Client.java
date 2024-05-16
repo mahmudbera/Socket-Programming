@@ -111,6 +111,10 @@ class ServerListener extends Thread implements java.io.Serializable
 							Login.nextFrame = new HomePage(this.client);
 							Login.nextFrame.setVisible(true);
 							Login.login.setVisible(false);
+							Login.nextFrame.setTitle(this.client.clientName);
+						}else{
+							Login.showMessage();
+							Login.client.Stop();
 						}
 						break;
 					case ClientConnected:
