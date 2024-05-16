@@ -49,6 +49,7 @@ public class HomePage extends javax.swing.JFrame
 
 		getUsers();
 		getProjects();
+		this.setLocationRelativeTo(null);
 	}
 
 	/**
@@ -71,7 +72,6 @@ public class HomePage extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         ProjectMembersList = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         UserProjectList = new javax.swing.JList<>();
@@ -87,6 +87,7 @@ public class HomePage extends javax.swing.JFrame
         ChatwithUserButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             public void windowClosing(java.awt.event.WindowEvent evt)
@@ -121,15 +122,6 @@ public class HomePage extends javax.swing.JFrame
         ProjectMembersList.setEnabled(false);
         jScrollPane3.setViewportView(ProjectMembersList);
 
-        jButton1.setText("Refresh");
-        jButton1.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -144,8 +136,7 @@ public class HomePage extends javax.swing.JFrame
                     .addComponent(EnterAvaliableProjectButton)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(162, 162, 162)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(64, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -160,9 +151,7 @@ public class HomePage extends javax.swing.JFrame
                     .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(EnterAvaliableProjectButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Available Projects", jPanel6);
@@ -196,7 +185,7 @@ public class HomePage extends javax.swing.JFrame
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(EnteringProjectChatButton)
-                .addContainerGap(104, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("My Projects", jPanel4);
@@ -235,7 +224,7 @@ public class HomePage extends javax.swing.JFrame
                     .addComponent(ProjectNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(CreateProjectButton)
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addContainerGap(200, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Create Project", jPanel5);
@@ -315,8 +304,8 @@ public class HomePage extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -388,11 +377,6 @@ public class HomePage extends javax.swing.JFrame
     {//GEN-HEADEREND:event_formWindowClosing
 		this.client.Stop();
     }//GEN-LAST:event_formWindowClosing
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
-    {//GEN-HEADEREND:event_jButton1ActionPerformed
-		getProjects();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void EnteringProjectChatButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_EnteringProjectChatButtonActionPerformed
     {//GEN-HEADEREND:event_EnteringProjectChatButtonActionPerformed
@@ -469,7 +453,6 @@ public class HomePage extends javax.swing.JFrame
     private javax.swing.JTextField ProjectNameTextField;
     private javax.swing.JList<String> UserList;
     private javax.swing.JList<String> UserProjectList;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

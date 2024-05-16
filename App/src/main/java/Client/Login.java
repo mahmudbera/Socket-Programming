@@ -16,12 +16,13 @@ import javax.swing.JOptionPane;
  */
 public class Login extends javax.swing.JFrame
 {
-
+	public static Login login;
 	public static HomePage nextFrame;
 	Client client;
 	
 	public Login()
 	{
+		login = this;
 		initComponents();
 	}
 
@@ -43,6 +44,13 @@ public class Login extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setText("Username");
 
@@ -105,12 +113,19 @@ public class Login extends javax.swing.JFrame
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_LoginButtonActionPerformed
     {//GEN-HEADEREND:event_LoginButtonActionPerformed
-       // this.client = new Client("13.48.44.132", 5000, UsernameTextField.getText().trim());
-		this.client = new Client("localhost", 5000, UsernameTextField.getText().trim());
+        this.client = new Client("13.48.44.132", 4000, UsernameTextField.getText().trim());
+		//this.client = new Client("localhost", 4000, UsernameTextField.getText().trim());
 		Request request = new Request(Request.requestType.Login);
 		request.request = UsernameTextField.getText().trim();
 		this.client.sendToServer(request);
     }//GEN-LAST:event_LoginButtonActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+        if (this.client != null) {
+			this.client.Stop();
+		}
+    }//GEN-LAST:event_formWindowClosing
 
 	/**
 	 * @param args the command line arguments

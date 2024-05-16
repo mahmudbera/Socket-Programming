@@ -5,9 +5,11 @@
 package Client;
 
 import Message.Request;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -63,7 +65,8 @@ public class Client implements java.io.Serializable
 				Request request = new Request(Request.requestType.ClientDisconnected);
 				request.request = this.clientName;
 				this.sendToServer(request);
-				
+
+				this.listener.Disconnect();
 				this.socket.close();
 				this.sOutput.close();
 				this.sInput.close();
@@ -80,15 +83,23 @@ class ServerListener extends Thread implements java.io.Serializable
 
 	Client client;
 
+	boolean isRunning = true;
+
 	public ServerListener(Client client)
 	{
 		this.client = client;
 	}
 
+	public void Disconnect()
+	{
+		isRunning = false;
+		interrupt();
+	}
+
 	@Override
 	public void run()
 	{
-		while (this.client.socket.isConnected()) {
+		while (isRunning) {
 			try {
 				Request request = (Request) client.sInput.readObject();
 				switch (request.thisType) {
@@ -99,6 +110,7 @@ class ServerListener extends Thread implements java.io.Serializable
 							this.client.sendToServer(loginRespond);
 							Login.nextFrame = new HomePage(this.client);
 							Login.nextFrame.setVisible(true);
+							Login.login.setVisible(false);
 						}
 						break;
 					case ClientConnected:
@@ -118,7 +130,7 @@ class ServerListener extends Thread implements java.io.Serializable
 							}
 						}
 						break;
-					
+
 					case CreateProject:
 						if (request.request.equals(true)) {
 							HomePage.groupChat = new GroupChat(this.client);
@@ -149,7 +161,29 @@ class ServerListener extends Thread implements java.io.Serializable
 					case ProjectCreated:
 						HomePage.DLMAvailableProjects.addElement(request.request);
 						break;
-						
+
+					case SendFileToGroup:
+						ArrayList<Object> fileArrayList = (ArrayList<Object>) request.request;
+						String file = System.getProperty("user.home") + "/Downloads/" + fileArrayList.get(5).toString() + fileArrayList.get(1);
+						byte[] mybytearray = (byte[]) fileArrayList.get(2);
+						OutputStream os = new FileOutputStream(file);
+						os.write(mybytearray);
+						//System.out.println((String) fileArrayList.get(1) + " geldi.");
+						HomePage.groupChat.DLMMessageList.addElement(fileArrayList.get(5).toString() + ":(Dosya)" + fileArrayList.get(1).toString());
+						os.close();
+						break;
+					case SendFileToPersonal:
+						ArrayList<Object> pFileArrayList = (ArrayList<Object>) request.request;
+						String pFile = System.getProperty("user.home") + "/Downloads/" + pFileArrayList.get(5).toString() + pFileArrayList.get(1);
+						byte[] pmybytearray = (byte[]) pFileArrayList.get(2);
+						OutputStream pOs = new FileOutputStream(pFile);
+						pOs.write(pmybytearray);
+						//System.out.println((String) fileArrayList.get(1) + " geldi.");
+						if (HomePage.personalChat != null && HomePage.personalChat.isVisible() == true) {
+							HomePage.personalChat.DLMMessagesList.addElement(pFileArrayList.get(5).toString() + ":(Dosya)" + pFileArrayList.get(1).toString());
+						}
+						pOs.close();
+						break;
 					case SendPersonalMessage:
 						if (HomePage.personalChat != null && HomePage.personalChat.isVisible() == true) {
 							HomePage.personalChat.DLMMessagesList.addElement(request.request);
@@ -174,7 +208,7 @@ class ServerListener extends Thread implements java.io.Serializable
 							HomePage.personalChat.DLMMessagesList.addElement(pMessage);
 						}
 						break;
-						
+
 					case LoginPrivateChat:
 						HomePage.personalChat = new PersonalChat(this.client);
 						HomePage.personalChat.ToClient = request.request.toString();

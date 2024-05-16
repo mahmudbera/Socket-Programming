@@ -14,9 +14,10 @@ public class Request implements java.io.Serializable
 	public enum requestType
 	{
 		Login, ClientConnected, GetUsers, ClientDisconnected,
-		CreateProject, GetProjects, GetProjectMembers, ProjectCreated, EnterGroupChat, 
+		CreateProject, GetProjects, GetProjectMembers, ProjectCreated, EnterGroupChat, OutFromProject, 
 		GetGroupMessages, GetPrivateMessages, SendPersonalMessage, SendMessageToGroup, 
-		LoginPrivateChat
+		LoginPrivateChat,
+		SendFileToGroup, SendFileToPersonal
 	}
 
 	public requestType thisType;
@@ -29,6 +30,8 @@ public class Request implements java.io.Serializable
 	public boolean checkPassword = true;
 	
 	public String clientName;
+	
+	public byte[] fileContent;
 	
 	public Request(requestType type)
 	{

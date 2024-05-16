@@ -5,8 +5,16 @@
 package Client;
 
 import Message.Request;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 /**
@@ -27,6 +35,7 @@ public class GroupChat extends javax.swing.JFrame
 		DLMMessageList = new DefaultListModel();
 		MessagesList.setModel(DLMMessageList);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setLocationRelativeTo(null);
 	}
 	
 	public void getMessages()
@@ -60,6 +69,13 @@ public class GroupChat extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -79,6 +95,13 @@ public class GroupChat extends javax.swing.JFrame
         jPanel1.add(SendMessageButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 250, 85, -1));
 
         SendFileButton.setText("File");
+        SendFileButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                SendFileButtonActionPerformed(evt);
+            }
+        });
         jPanel1.add(SendFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 280, 85, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -107,6 +130,42 @@ public class GroupChat extends javax.swing.JFrame
 		this.client.sendToServer(request);
 		MessageTextField.setText("");
     }//GEN-LAST:event_SendMessageButtonActionPerformed
+
+    private void SendFileButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendFileButtonActionPerformed
+    {//GEN-HEADEREND:event_SendFileButtonActionPerformed
+        ArrayList<Object> fileArr = new ArrayList<>();
+        JFileChooser j = new JFileChooser();
+        int dialog = j.showSaveDialog(this);
+        if (dialog == JFileChooser.APPROVE_OPTION) {
+			try {
+				File inputFile = j.getSelectedFile();
+				byte[] mybytearray = new byte[(int) inputFile.length()];
+				FileInputStream fis = new FileInputStream(inputFile);
+				BufferedInputStream bis = new BufferedInputStream(fis);
+				bis.read(mybytearray, 0, mybytearray.length);
+				fileArr.add(this.ProjectName);
+				fileArr.add(inputFile.getName());
+				fileArr.add(mybytearray);
+				fileArr.add(0);
+				fileArr.add(mybytearray.length);
+				fileArr.add(this.client.clientName);
+				Request msg = new Request(Request.requestType.SendFileToGroup);
+				msg.request = fileArr;
+				this.client.sendToServer(msg);
+			} catch (IOException ex) {
+				Logger.getLogger(GroupChat.class.getName()).log(Level.SEVERE, null, ex);
+			}
+
+            
+        }
+    }//GEN-LAST:event_SendFileButtonActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+        Request request = new Request(Request.requestType.OutFromProject);
+		request.request = this.ProjectName;
+		this.client.sendToServer(request);
+    }//GEN-LAST:event_formWindowClosing
 
 	/**
 	 * @param args the command line arguments

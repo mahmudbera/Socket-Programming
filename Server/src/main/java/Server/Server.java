@@ -41,7 +41,27 @@ public class Server
 			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-
+	
+	public Project getProject(String projectName)
+	{
+		for (Project project : projectList) {
+			if (project.projectName.equals(projectName)) {
+				return project;
+			}
+		}
+		return null;
+	}
+	
+	public ServerClient getClient(String clientName)
+	{
+		for (ServerClient serverClient : clientList) {
+			if (serverClient.clientName.equals(clientName)) {
+				return serverClient;
+			}
+		}
+		return null;
+	}
+	
 	public void sendToClient(ServerClient client, Request request)
 	{
 		try {
@@ -95,6 +115,23 @@ public class Server
 			}
 		}
 		return false;
+	}
+	
+	public void ClientDisconnected(ServerClient serverClient)
+	{
+		for (Project project : projectList) {
+			if (project.owner.equals(serverClient.clientName)) {
+				projectList.remove(project);
+			}
+		}
+		
+		for (Private privateChat : privateList) {
+			if (privateChat.client1.equals(serverClient.clientName) || privateChat.client2.equals(serverClient.clientName) ) {
+				privateList.remove(privateChat);
+			}
+		}
+		
+		this.clientList.remove(serverClient);
 	}
 	
 	public class ServerListener extends Thread

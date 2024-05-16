@@ -46,6 +46,7 @@ public class ServerClient implements java.io.Serializable
 	{
 		try {
 			this.socket.close();
+			this.listener.Disconnect();
 		} catch (IOException ex) {
 			Logger.getLogger(ServerClient.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -56,17 +57,24 @@ public class ServerClient implements java.io.Serializable
 
 		ServerClient serverClient;
 		Server server;
-
+		boolean check = true;
+		
 		public ClientListener(ServerClient client, Server server)
 		{
 			this.serverClient = client;
 			this.server = server;
 		}
 
+		public void Disconnect()
+		{
+			check = false;
+			interrupt();
+		}
+		
 		@Override
 		public void run()
 		{
-			while (serverClient.socket.isConnected()) {
+			while (check) {
 				try {
 					Request request = (Request) this.serverClient.sInput.readObject();
 					switch (request.thisType) {
@@ -112,6 +120,7 @@ public class ServerClient implements java.io.Serializable
 							respondClientDisconnected.request = request.request;
 							this.server.sendToClients(respondClientDisconnected);
 							this.serverClient.Disconnect();
+							this.server.ClientDisconnected(this.serverClient);
 							break;
 
 						case CreateProject:
@@ -200,7 +209,31 @@ public class ServerClient implements java.io.Serializable
 							projectMembersRespond.request = projectUsers;
 							this.server.sendToClient(this.serverClient, projectMembersRespond);
 							break;
-
+						case OutFromProject:
+							Project po = this.server.getProject(request.request.toString());
+							for (String string : po.clientList) {
+								if (string.equals(this.serverClient.clientName)) {
+									po.clientList.remove(string);
+								}
+							}
+							break;
+							
+						case SendFileToGroup:
+							ArrayList<Object> fileArrayList = (ArrayList<Object>) request.request;
+							Project p = this.server.getProject(((ArrayList<Object>) request.request).get(0).toString());
+							p.messageList.add(fileArrayList.get(5).toString() + ":(Dosya)" + fileArrayList.get(1).toString());
+							for (String pUsers : p.clientList) {
+								ServerClient toClient = this.server.getClient(pUsers);
+								this.server.sendToClient(toClient, request);
+							}
+							break;
+						case SendFileToPersonal:
+							ArrayList<Object> pFileArrayList = (ArrayList<Object>) request.request;
+							ServerClient sc = this.server.getClient(pFileArrayList.get(0).toString());
+							this.server.sendToClient(sc, request);
+							Private pp = this.server.getPrivate(pFileArrayList.get(5).toString(), pFileArrayList.get(0).toString());
+							pp.messages.add(pFileArrayList.get(5).toString() + ":(Dosya)" + pFileArrayList.get(1).toString());
+							break;
 						case SendPersonalMessage:
 							ServerClient serverToClient = null;
 							for (ServerClient sClient : this.server.clientList) {
@@ -218,7 +251,6 @@ public class ServerClient implements java.io.Serializable
 								temp.messages.add(personelMessage);
 							}
 							break;
-
 						case SendMessageToGroup:
 							String message = request.request.toString();
 							for (Project project : this.server.projectList) {
@@ -237,7 +269,6 @@ public class ServerClient implements java.io.Serializable
 						case GetGroupMessages:
 							ArrayList<String> groupMessages = new ArrayList<>();
 							for (Project mProject : this.server.projectList) {
-								System.out.println(request.projectName);
 								if (mProject.projectName.equals(request.projectName)) {
 									for (String groupMessage : mProject.messageList) {
 										groupMessages.add(groupMessage);

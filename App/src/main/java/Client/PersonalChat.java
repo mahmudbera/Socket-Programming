@@ -5,7 +5,15 @@
 package Client;
 
 import Message.Request;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 /**
@@ -80,6 +88,13 @@ public class PersonalChat extends javax.swing.JFrame
         jPanel1.add(SendMessageButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 250, 85, -1));
 
         SendFileButton.setText("File");
+        SendFileButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                SendFileButtonActionPerformed(evt);
+            }
+        });
         jPanel1.add(SendFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 280, 85, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -108,6 +123,34 @@ public class PersonalChat extends javax.swing.JFrame
 		MessageTextField.setText("");
 		DLMMessagesList.addElement(message);
     }//GEN-LAST:event_SendMessageButtonActionPerformed
+
+    private void SendFileButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_SendFileButtonActionPerformed
+    {//GEN-HEADEREND:event_SendFileButtonActionPerformed
+        ArrayList<Object> fileArr = new ArrayList<>();
+        JFileChooser j = new JFileChooser();
+        int dialog = j.showSaveDialog(this);
+        if (dialog == JFileChooser.APPROVE_OPTION) {
+			try {
+				File inputFile = j.getSelectedFile();
+				byte[] mybytearray = new byte[(int) inputFile.length()];
+				FileInputStream fis = new FileInputStream(inputFile);
+				BufferedInputStream bis = new BufferedInputStream(fis);
+				bis.read(mybytearray, 0, mybytearray.length);
+				fileArr.add(this.ToClient);
+				fileArr.add(inputFile.getName());
+				fileArr.add(mybytearray);
+				fileArr.add(0);
+				fileArr.add(mybytearray.length);
+				fileArr.add(this.client.clientName);
+				Request msg = new Request(Request.requestType.SendFileToPersonal);
+				msg.request = fileArr;
+				this.client.sendToServer(msg);
+			} catch (IOException ex) {
+				Logger.getLogger(GroupChat.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			DLMMessagesList.addElement(fileArr.get(5).toString() + ":(Dosya)" + fileArr.get(1).toString());
+        }
+    }//GEN-LAST:event_SendFileButtonActionPerformed
 
 	/**
 	 * @param args the command line arguments
