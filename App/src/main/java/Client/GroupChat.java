@@ -165,6 +165,7 @@ public class GroupChat extends javax.swing.JFrame
         Request request = new Request(Request.requestType.OutFromProject);
 		request.request = this.ProjectName;
 		this.client.sendToServer(request);
+		this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
 	/**

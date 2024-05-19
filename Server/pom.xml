@@ -22,7 +22,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Server.serverStarter</mainClass>
+                            <mainClass>Server.mainServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

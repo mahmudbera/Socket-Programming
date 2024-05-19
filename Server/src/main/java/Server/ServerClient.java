@@ -78,17 +78,17 @@ public class ServerClient implements java.io.Serializable
 				try {
 					Request request = (Request) this.serverClient.sInput.readObject();
 					switch (request.thisType) {
-						case Login:
+						case Login: // Kullanıcı ilk giriş yapmaya çalıştığında çalışır.
 							boolean check = false;
 							String name = request.request.toString();
 							this.serverClient.clientName = name;
 							for (ServerClient client : this.server.clientList) {
-								if (client.clientName.equals(name) && !client.equals(this.serverClient)) {
-									check = true;
+								if (client.clientName.equals(name) && !client.equals(this.serverClient)) { 
+									check = true; // Eğer girilen kullanıcı adında herhangi bir client varsa kaydedilir.
 								}
 							}
 
-							Request loginRespond;
+							Request loginRespond; // Kullanıcı adının uygunluğuna göre devam etmesine karar verilir.
 							if (check == true) {
 								loginRespond = new Request(Request.requestType.Login);
 								loginRespond.request = false; // Olumsuz Cevap
@@ -99,12 +99,12 @@ public class ServerClient implements java.io.Serializable
 								this.server.sendToClient(this.serverClient, loginRespond);
 							}
 							break;
-						case ClientConnected:
+						case ClientConnected: // Herhangi bir kullanıcı bağlandığı anda bütün kullanıcıların ekranına ilgili bilgiler gönderilir
 							Request respondClientConnected = new Request(Request.requestType.ClientConnected);
 							respondClientConnected.request = this.serverClient.clientName;
 							this.server.sendToClients(this.serverClient, respondClientConnected);
 							break;
-						case GetUsers:
+						case GetUsers: // Kullanıcı giriş yaptığı zaman öncesinde katılmış olan kullanıcıların görülebilmesi için bütün 
 							ArrayList<String> userNames = new ArrayList<>();
 							for (ServerClient serverClient : this.server.clientList) {
 								if (!serverClient.equals(this.serverClient)) {
@@ -115,7 +115,7 @@ public class ServerClient implements java.io.Serializable
 							respondGetUsers.request = userNames;
 							this.server.sendToClient(this.serverClient, respondGetUsers);
 							break;
-						case ClientDisconnected:
+						case ClientDisconnected: // Herhangi bir kullanıcı ayrıldığı anda bütün kullanıcılara bilgisi verilir ve silme işlemleri yapılır.
 							Request respondClientDisconnected = new Request(Request.requestType.ClientDisconnected);
 							respondClientDisconnected.request = request.request;
 							this.server.sendToClients(respondClientDisconnected);
@@ -123,7 +123,7 @@ public class ServerClient implements java.io.Serializable
 							this.server.ClientDisconnected(this.serverClient);
 							break;
 
-						case CreateProject:
+						case CreateProject: // Burada proje oluşturma veya katılma işlemi gerçekleşir.
 							String all[] = request.request.toString().split(",");
 							String projectName = all[0];
 							String password = all[1];
@@ -135,14 +135,14 @@ public class ServerClient implements java.io.Serializable
 									checkName = true;
 								}
 							}
-							if (checkName == true) {
+							if (checkName == true) { // Eğerki aynı isimde proje varsa açılmasına izin verilmez.
 								Request respondCreateProject = new Request(Request.requestType.CreateProject);
 								respondCreateProject.request = false; // Olumsuz
 								this.server.sendToClient(this.serverClient, respondCreateProject);
 							} else {
 								Project project = new Project(clientName, password, clientName);
 								this.server.projectList.add(project);
-
+								// Yoksa proje açılır ve kaydedilir.
 								Request respondCreateProject = new Request(Request.requestType.CreateProject);
 								respondCreateProject.request = true; // Olumlu
 								respondCreateProject.projectName = projectName;
@@ -153,19 +153,19 @@ public class ServerClient implements java.io.Serializable
 								respondProjectCreated.request = projectName;
 								this.server.sendToClients(this.serverClient, respondProjectCreated);
 							}
-						case EnterGroupChat:
-							boolean enterCheck = false;
-							if (request.checkPassword == true) {
-								for (Project enProject : this.server.projectList) {
-									if (enProject.projectName.equals(request.projectName) && enProject.password.equals(request.password)) {
+						case EnterGroupChat: 
+							boolean enterCheck = false; // Grup konuşmasına, proje sahibi mi giriyor başkası mı giriyor bunu kontrol etmek için kullandım.
+							if (request.checkPassword == true) { // Eğer grup sahibi değilse, giren kişiye şifre sorulacak.
+								for (Project enProject : this.server.projectList) { // ilgili proje bulunur.
+									if (enProject.projectName.equals(request.projectName) && enProject.password.equals(request.password)) { // şifre kontrol edilir.
 										enterCheck = true;
 										int added = 0;
 										for (String nameChecker : enProject.clientList) {
-											if (nameChecker.equals(request.request.toString())) {
+											if (nameChecker.equals(request.request.toString())) { // Daha önceden projeye giriş yapmış mı kontrol edilir.
 												added = 1;
 											}
 										}
-										if (added == 0) {
+										if (added == 0) { // Eğer yapmamışsa listeye eklenir.
 											enProject.clientList.add(request.request.toString());
 										}
 									}
@@ -184,7 +184,7 @@ public class ServerClient implements java.io.Serializable
 								this.server.sendToClient(this.serverClient, respondEnterGroupChat);
 							}
 							break;
-						case GetProjects:
+						case GetProjects: // Bütün projelerin adını döndürür ve kullanıcıya verir.
 							ArrayList<String> projectNames = new ArrayList<>();
 							for (Project project : this.server.projectList) {
 								if (!project.owner.equals(this.serverClient.clientName)) {
@@ -195,7 +195,7 @@ public class ServerClient implements java.io.Serializable
 							respondGetProjects.request = projectNames;
 							this.server.sendToClient(this.serverClient, respondGetProjects);
 							break;
-						case GetProjectMembers:
+						case GetProjectMembers: // İlgili projenin üyelerini döndürür.
 							String pName = request.request.toString();
 							ArrayList<String> projectUsers = new ArrayList<>();
 							for (Project project : this.server.projectList) {
@@ -218,7 +218,7 @@ public class ServerClient implements java.io.Serializable
 							}
 							break;
 							
-						case SendFileToGroup:
+						case SendFileToGroup: // Bütün gruba dosya gönderir.
 							ArrayList<Object> fileArrayList = (ArrayList<Object>) request.request;
 							Project p = this.server.getProject(((ArrayList<Object>) request.request).get(0).toString());
 							p.messageList.add(fileArrayList.get(5).toString() + ":(Dosya)" + fileArrayList.get(1).toString());
@@ -227,14 +227,14 @@ public class ServerClient implements java.io.Serializable
 								this.server.sendToClient(toClient, request);
 							}
 							break;
-						case SendFileToPersonal:
+						case SendFileToPersonal: // Tek kullanıcıya dosya gönderir
 							ArrayList<Object> pFileArrayList = (ArrayList<Object>) request.request;
 							ServerClient sc = this.server.getClient(pFileArrayList.get(0).toString());
 							this.server.sendToClient(sc, request);
 							Private pp = this.server.getPrivate(pFileArrayList.get(5).toString(), pFileArrayList.get(0).toString());
 							pp.messages.add(pFileArrayList.get(5).toString() + ":(Dosya)" + pFileArrayList.get(1).toString());
 							break;
-						case SendPersonalMessage:
+						case SendPersonalMessage: // Tek kullanıcıya mesaj gönderir
 							ServerClient serverToClient = null;
 							for (ServerClient sClient : this.server.clientList) {
 								if (sClient.clientName.equals(request.clientName)) {
@@ -251,7 +251,7 @@ public class ServerClient implements java.io.Serializable
 								temp.messages.add(personelMessage);
 							}
 							break;
-						case SendMessageToGroup:
+						case SendMessageToGroup: // Projedeki kullancılara mesaj gönderir.
 							String message = request.request.toString();
 							for (Project project : this.server.projectList) {
 								if (project.projectName.equals(request.projectName)) {
@@ -266,7 +266,7 @@ public class ServerClient implements java.io.Serializable
 								}
 							}
 							break;
-						case GetGroupMessages:
+						case GetGroupMessages: // Projedeki önceden gönderilmiş mesajları getirir.
 							ArrayList<String> groupMessages = new ArrayList<>();
 							for (Project mProject : this.server.projectList) {
 								if (mProject.projectName.equals(request.projectName)) {
@@ -279,7 +279,7 @@ public class ServerClient implements java.io.Serializable
 							respondGetGroupMessages.request = groupMessages;
 							this.server.sendToClient(this.serverClient, respondGetGroupMessages);
 							break;
-						case GetPrivateMessages:
+						case GetPrivateMessages: // Birebir gönderilmiş mesajları getirir.
 							String clientNames[] = request.request.toString().split(",");
 							String c1 = clientNames[0];
 							String c2 = clientNames[1];
@@ -298,13 +298,13 @@ public class ServerClient implements java.io.Serializable
 							this.server.sendToClient(this.serverClient, respondGetPrivateMessages);
 							break;
 
-						case LoginPrivateChat:
+						case LoginPrivateChat: // Birebir mesajlaşma içi odaya girilir.
 							String names[] = request.request.toString().split(",");
 							String client1 = names[0];
 							String client2 = names[1];
 
 							boolean chatCheck = this.server.privateExist(client1, client2);
-							if (chatCheck == false) {
+							if (chatCheck == false) { // Daha önceden 2 kullanıcı arasında mesajlaşma olmadıysa oluşturulup serverda listeye eklenir.
 								Private newPrivate = new Private(client1, client2);
 								this.server.privateList.add(newPrivate);
 							}
